@@ -100,7 +100,7 @@ class CreateNewPhotoLog:
 
         # define install folder path
         scripts_folder = os.path.dirname(os.path.realpath(__file__))
-        install_folder = os.path.split(scripts_folder)[0]   
+        install_folder = os.path.split(scripts_folder)[0]
 
         # Import Custom Libraries
         sys.path.append(scripts_folder)
@@ -195,7 +195,7 @@ class EditExistingPhotoLogParameters:
 
         # define install folder path
         scripts_folder = os.path.dirname(os.path.realpath(__file__))
-        install_folder = os.path.split(scripts_folder)[0]   
+        install_folder = os.path.split(scripts_folder)[0]
         
         # Import Custom Libraries
         sys.path.append(scripts_folder)

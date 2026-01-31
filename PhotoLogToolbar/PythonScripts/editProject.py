@@ -1,5 +1,5 @@
+import os
 import arcpy
-
 
 def Main(PhotoFolder=None, ProjectName=None, USACE_ID=None, Photographer=None):
     # Reference the project currently open in ArcGIS Pro

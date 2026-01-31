@@ -107,6 +107,9 @@
     <None Update="PythonScripts\backup_images.py">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="PythonScripts\editProject.py">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="PythonScripts\executables.py">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
