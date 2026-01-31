@@ -48,11 +48,11 @@
       </groups>
       <controls>
         <!-- add your controls here -->
-        <button id="PhotoLogToolbar_Menu1_Items_Button1" caption="Menu Button 1" className="Menu1_button1" loadOnClick="true" smallImage="GenericButtonGreen16" largeImage="GenericButtonGreen32">
+        <button id="PhotoLogToolbar_Menu1_Items_Button1" caption="New Project" className="Menu1_button1" loadOnClick="true" smallImage="GenericButtonGreen16" largeImage="GenericButtonGreen32">
           <tooltip heading="Menu Button 1">ToolTip<disabledText /></tooltip></button>
-        <button id="PhotoLogToolbar_Menu1_Items_Button2" caption="Menu Button 2" className="Menu1_button2" loadOnClick="true" smallImage="GenericButtonGreen16" largeImage="GenericButtonGreen32">
+        <button id="PhotoLogToolbar_Menu1_Items_Button2" caption="Edit Project" className="Menu1_button2" loadOnClick="true" smallImage="GenericButtonGreen16" largeImage="GenericButtonGreen32">
           <tooltip heading="Menu Button 2">ToolTip<disabledText /></tooltip></button>
-        <button id="PhotoLogToolbar_Menu1_Items_Button3" caption="Menu Button 3" className="Menu1_button3" loadOnClick="true" smallImage="GenericButtonGreen16" largeImage="GenericButtonGreen32">
+        <button id="PhotoLogToolbar_Menu1_Items_Button3" caption="Export Photo Log" className="Menu1_button3" loadOnClick="true" smallImage="GenericButtonGreen16" largeImage="GenericButtonGreen32">
           <tooltip heading="Menu Button 3">ToolTip<disabledText /></tooltip></button>
         <button id="PhotoLogToolbar_ButtonPalette1_Items_Button1" caption="Palette Button 1" className="ButtonPalette1_button1" loadOnClick="true" smallImage="GenericButtonGrey16" largeImage="GenericButtonGrey32">
           <tooltip heading="Palette Button 1">ToolTip<disabledText /></tooltip></button>
