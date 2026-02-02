@@ -29,11 +29,20 @@ namespace PhotoLogToolbar
 {
   internal class FeatureComboBoxItem : ComboBoxItem
   {
-    internal FeatureComboBoxItem (string name, Geometry geometry) : base(name, null, $@"zoom to '{name}'")
+    // Preserve the original constructor and behavior; add a property to store
+    // the feature's page key (Number field or other index field used by MapSeries).
+    // This makes it safe and explicit to read the page/key back when the user selects an item.
+    internal FeatureComboBoxItem (string name, Geometry geometry, string? pageKey = null) : base(name, null, $@"zoom to '{name}'")
     {
       Geometry = geometry;
+      PageKey = pageKey ?? name; // default to the display name if no explicit key provided
     }
 
+    // Geometry of the feature (used for zooming)
     internal Geometry Geometry { get; set; }
+
+    // The page key associated with this feature (string). This is the value we will pass to MapSeries.SetCurrentPageNumber.
+    // Storing it explicitly avoids relying on ComboBoxItem internals for the displayed text.
+    internal string? PageKey { get; }
   }
 }
