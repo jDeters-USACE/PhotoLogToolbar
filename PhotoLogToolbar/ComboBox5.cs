@@ -20,70 +20,134 @@ using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Timers;
 
 namespace PhotoLogToolbar
 {
     /// <summary>
-    /// Represents the ComboBox
+    /// ComboBox5
+    ///
+    /// This control represents one of the ComboBox controls that populate themselves
+    /// from features in the "Photo Location" feature layer. It uses the centralized
+    /// MapSeriesWatcher to detect when MapSeries.CurrentPageNumber changes and refreshes
+    /// its contents in response.
+    ///
+    /// CONCEPTUAL OVERVIEW FOR NOVICES:
+    ///   - The ArcGIS Pro SDK uses thread-affine objects (Layout, MapSeries, MapFrame, etc.).
+    ///     These objects must be read/modified on the QueuedTask thread. That is why methods
+    ///     that access ArcGIS objects call QueuedTask.Run.
+    ///   - UI work and control lifetime are managed by WPF and the ArcGIS Pro framework. The
+    ///     ComboBox class we inherit from provides lifecycle entry points such as constructors
+    ///     and OnDropDownOpened. We use those to initialize and refresh the control.
+    ///   - Instead of creating a timer inside each ComboBox, we subscribe to a single global
+    ///     MapSeriesWatcher. This reduces resource use and centralizes the logic to detect
+    ///     page changes.
     /// </summary>
     internal class ComboBox5 : ComboBox
     {
+        #region Fields - persistent control state
+        // Track whether the ComboBox has been initialized previously. Used to clear and re-select.
         private bool _isInitialized;
-        private MapSeries? _subscribedMapSeries;
 
-        // Polling timer to detect MapSeries page changes (ArcGIS Pro SDK 3.4 has no PropertyChanged on MapSeries)
-        private Timer? _mapSeriesPollTimer;
-        private string? _lastPageNumber;
+        // NOTE: we previously had per-control timers. Those are removed in favor of MapSeriesWatcher.
+        #endregion
 
+        #region Constructor / lifecycle
+        // Constructor: start initial population and subscribe to the centralized watcher.
         public ComboBox5()
         {
-            // Fire-and-forget initialization; do not block the ctor.
+            // Start the first population asynchronously (fire-and-forget); do not block constructor.
+            // UpdateComboAsync accesses ArcGIS objects using QueuedTask internally.
             _ = UpdateComboAsync();
 
-            // Ensure we are subscribed to map series changes (via polling fallback)
-            SubscribeToMapSeriesEvents();
+            // Subscribe to the central MapSeries watcher. When the watcher detects a page change
+            // it will invoke OnMapSeriesPageChanged which refreshes this combo.
+            MapSeriesWatcher.Instance.Subscribe(OnMapSeriesPageChanged);
         }
 
+        // Finalizer (destructor): ensure we unsubscribe from the centralized watcher to avoid
+        // keeping references alive longer than necessary. If your controls live for the app lifetime
+        // this is optional, but it's shown here for completeness and to demonstrate cleanup patterns.
+        ~ComboBox5()
+        {
+            try
+            {
+                MapSeriesWatcher.Instance.Unsubscribe(OnMapSeriesPageChanged);
+            }
+            catch
+            {
+                // Swallow in finalizer; do not throw from a destructor.
+            }
+        }
+        #endregion
+
+        #region UI hooks
+        // Called by the ComboBox framework when the dropdown opens. We refresh subscription (no-op)
+        // and enqueue a refresh to ensure the list is current when the user opens it.
         protected override void OnDropDownOpened()
         {
-            // refresh subscription in case the active layout / map frame changed
-            SubscribeToMapSeriesEvents();
-
+            // Refresh contents because the active layout or map frame may have changed since construction.
             _ = UpdateComboAsync();
         }
+        #endregion
 
+        #region Helper utilities (small helpers used in queries)
+        // Escape a string for use inside SQL WHERE clause string literals.
+        // NOTE: with the assumption that MapSeries page value is numeric we still use this helper
+        // in a paranoid fashion when constructing WHERE clauses.
         private static string EscapeForSql(string value) => value?.Replace("'", "''") ?? string.Empty;
-        private static string QuoteFieldForFileGdb(string fieldName) => $"\"{fieldName}\"";
 
-#nullable enable
+        // Quote a field name using double quotes (suitable for file geodatabase / ArcGIS queries).
+        private static string QuoteFieldForFileGdb(string fieldName) => $"\"{fieldName}\"";
+        #endregion
+
+        #region MapSeries index value resolution
+        /*
+         * GetCurrentMapSeriesIndexValueAsync
+         *
+         * Purpose:
+         *   Attempt to obtain the current MapSeries index value. Under the user's assumption
+         *   this will always be numeric and is available through MapSeries.CurrentPageNumber.
+         *
+         * Steps (high level):
+         *   1. Use QueuedTask.Run to safely access LayoutView.Active and Layout.MapSeries.
+         *   2. If CurrentPageNumber is available, return it immediately (string).
+         *   3. As a fallback, attempt to query the index layer to resolve the index field value.
+         *
+         * Threading:
+         *   - This method itself runs asynchronously but the body that touches ArcGIS objects
+         *     executes on the QueuedTask thread.
+         */
         private async Task<string?> GetCurrentMapSeriesIndexValueAsync()
-#nullable restore
         {
             return await QueuedTask.Run(() =>
             {
+                // Acquire the active layout view (if any). If none, we cannot proceed.
                 var layoutView = LayoutView.Active;
                 if (layoutView == null) return null;
 
+                // Layout is the page composition; if absent we cannot proceed.
                 var layout = layoutView.Layout;
                 if (layout == null) return null;
 
+                // MapFrame is the element that contains the Map shown on the layout page.
                 var mapFrame = layout.GetElements().OfType<MapFrame>().FirstOrDefault();
                 if (mapFrame == null) return null;
 
+                // MapSeries contains paging information for the layout. If no map series, return.
                 var mapSeries = layout.MapSeries;
                 if (mapSeries == null) return null;
 
-                if (!string.IsNullOrEmpty(mapSeries.CurrentPageName))
-                    return mapSeries.CurrentPageName;
+                // Primary expected route: numeric page number is available via CurrentPageNumber.
+                if (!string.IsNullOrEmpty(mapSeries.CurrentPageNumber))
+                    return mapSeries.CurrentPageNumber;
 
-                if (!string.IsNullOrEmpty(mapSeries.CurrentPageName))
-                    return mapSeries.CurrentPageName;
-
-                // As a last resort, try to read the index layer using CurrentPageIndex and its index field
+                // Fallback: inspect the index layer to resolve the index field using the CIM definition.
                 try
                 {
-                    var indexLayer = mapFrame?.Map?.GetLayersAsFlattenedList().OfType<FeatureLayer>().FirstOrDefault(fl => fl.Name.Equals("Photo Location"));
+                    var indexLayer = mapFrame?.Map?.GetLayersAsFlattenedList()
+                        .OfType<FeatureLayer>()
+                        .FirstOrDefault(fl => fl.Name.Equals("Photo Location"));
+
                     if (indexLayer == null) return null;
 
                     var cimMapSeries = mapSeries.GetDefinition();
@@ -91,11 +155,13 @@ namespace PhotoLogToolbar
                     if (string.IsNullOrEmpty(mapSeries.CurrentPageNumber) || string.IsNullOrEmpty(pageFieldName))
                         return null;
 
+                    // Query the index layer by OBJECTID equal to the current page number (numeric).
                     var qf = new QueryFilter
                     {
                         WhereClause = $"OBJECTID = {mapSeries.CurrentPageNumber}",
                         SubFields = pageFieldName
                     };
+
                     using var cursor = indexLayer.Search(qf);
                     if (cursor.MoveNext())
                     {
@@ -105,15 +171,31 @@ namespace PhotoLogToolbar
                 }
                 catch
                 {
+                    // If anything fails while reading the index layer, return null so callers can fall back.
                     return null;
                 }
 
                 return null;
             });
         }
+        #endregion
 
+        #region Core refresh logic - populates the ComboBox items
+        /*
+         * UpdateComboAsync
+         *
+         * Purpose:
+         *   Populate the ComboBox with items from the "Photo Location" feature layer,
+         *   optionally filtered by the MapSeries current page number.
+         *
+         * Key behaviors:
+         *   - Clears previous items when running subsequent refreshes.
+         *   - Always executes ArcGIS data access on a QueuedTask thread.
+         *   - Under the numeric-page assumption we construct numeric WHERE clauses (no quotes).
+         */
         private async Task UpdateComboAsync()
         {
+            // If control was initialized before, clear contents so we repopulate from scratch.
             if (_isInitialized)
             {
                 Clear();
@@ -122,55 +204,37 @@ namespace PhotoLogToolbar
 
             _isInitialized = false;
 
+            // Get the active map from the MapView (this is safe on the calling thread).
             var mv = MapView.Active;
             var map = mv?.Map;
+
+            // Find the feature layer named "Photo Location". We use GetLayersAsFlattenedList to search all sublayers.
             var featureLayer = map?.GetLayersAsFlattenedList().OfType<FeatureLayer>().FirstOrDefault(fl => fl.Name.Equals("Photo Location"));
             if (featureLayer == null)
             {
+                // If the layer is not present, enable the control and exit gracefully.
                 Enabled = true;
                 return;
             }
 
-            // Resolve the map series page value (numeric per your message)
+            // Resolve the map series page value (expected numeric).
             var currentPageValue = await GetCurrentMapSeriesIndexValueAsync();
 
+            // Perform the feature read on the QueuedTask thread because feature access is thread-affine.
             await QueuedTask.Run(() =>
             {
-                // Determine if the target field is numeric
-                bool isNumericField = false;
-                try
-                {
-                    using var fc = featureLayer.GetFeatureClass();
-                    var def = fc.GetDefinition();
-                    var fld = def.GetFields().FirstOrDefault(f => f.Name.Equals("Number", StringComparison.OrdinalIgnoreCase));
-                    if (fld != null)
-                    {
-                        isNumericField = fld.FieldType == FieldType.Integer
-                                      || fld.FieldType == FieldType.SmallInteger
-                                      || fld.FieldType == FieldType.Single
-                                      || fld.FieldType == FieldType.Double;
-                    }
-                }
-                catch
-                {
-                    // If we can't determine type, default to string-safe behavior (quote)
-                    isNumericField = false;
-                }
-
-#nullable enable
+                // Build the numeric page WHERE clause if we obtained a page value.
                 string? pageWhereClause = null;
-#nullable restore
                 if (!string.IsNullOrEmpty(currentPageValue))
                 {
                     var fieldName = QuoteFieldForFileGdb("Number");
-                    var escaped = EscapeForSql(currentPageValue);
-                    pageWhereClause = isNumericField ? $"{fieldName} = {escaped}" : $"{fieldName} = '{escaped}'";
+                    var escaped = EscapeForSql(currentPageValue); // still escape to be defensive
+                    pageWhereClause = $"{fieldName} = {escaped}";
                 }
 
+                // Combine any layer definition query with our page filter (if present).
                 var layerDefQuery = featureLayer.DefinitionQuery;
-#nullable enable
                 string? combinedWhere = null;
-#nullable restore
                 if (!string.IsNullOrWhiteSpace(layerDefQuery) && !string.IsNullOrWhiteSpace(pageWhereClause))
                     combinedWhere = $"({layerDefQuery}) AND ({pageWhereClause})";
                 else if (!string.IsNullOrWhiteSpace(layerDefQuery))
@@ -178,6 +242,7 @@ namespace PhotoLogToolbar
                 else if (!string.IsNullOrWhiteSpace(pageWhereClause))
                     combinedWhere = pageWhereClause;
 
+                // Execute the appropriate search: unfiltered or filtered.
                 if (string.IsNullOrWhiteSpace(combinedWhere))
                 {
                     using var featCursor = featureLayer.Search();
@@ -185,7 +250,6 @@ namespace PhotoLogToolbar
                     {
                         using var feature = featCursor.Current as Feature;
                         Add(new FeatureComboBoxItem(feature["MetersOfView"]?.ToString(), feature.GetShape().Clone()));
-                        SelectedItem = ItemCollection.FirstOrDefault();
                     }
                 }
                 else
@@ -196,86 +260,41 @@ namespace PhotoLogToolbar
                     {
                         using var feature = featCursor.Current as Feature;
                         Add(new FeatureComboBoxItem(feature["MetersOfView"]?.ToString(), feature.GetShape().Clone()));
-                        SelectedItem = ItemCollection.FirstOrDefault();
                     }
                 }
+
+                // Select the first item by default. You may refine selection logic to match currentPageValue.
+                SelectedItem = ItemCollection.FirstOrDefault();
             });
 
+            // Mark as initialized and enable the control.
             _isInitialized = true;
             Enabled = true;
         }
+        #endregion
 
-        private void SubscribeToMapSeriesEvents()
+        #region MapSeries change handler (invoked by MapSeriesWatcher)
+        // This handler is invoked by the centralized MapSeriesWatcher whenever the page number changes.
+        // We respond by refreshing this control's contents. The handler does not itself access ArcGIS
+        // objects; it simply enqueues UpdateComboAsync which uses QueuedTask internally.
+        private void OnMapSeriesPageChanged(object? sender, string? newPageNumber)
         {
-            // run on QueuedTask because Layout/MapSeries are thread-affine
-            _ = QueuedTask.Run(() =>
-            {
-                var layoutView = LayoutView.Active;
-                var layout = layoutView?.Layout;
-                var mapSeries = layout?.MapSeries;
-
-                // nothing to do
-                if (_subscribedMapSeries == mapSeries) return;
-
-                // stop and dispose previous timer if any
-                _mapSeriesPollTimer?.Stop();
-                _mapSeriesPollTimer?.Dispose();
-                _mapSeriesPollTimer = null;
-                _lastPageNumber = null;
-
-                _subscribedMapSeries = mapSeries;
-
-                if (_subscribedMapSeries != null)
-                {
-                    // capture initial page number
-                    _lastPageNumber = _subscribedMapSeries.CurrentPageNumber;
-
-                    // Create polling timer (safe fallback for ArcGIS Pro SDK 3.4)
-                    // Timer runs on threadpool; inside Elapsed we safely call QueuedTask to access MapSeries
-                    _mapSeriesPollTimer = new Timer(1000);
-                    _mapSeriesPollTimer.AutoReset = true;
-                    _mapSeriesPollTimer.Elapsed += async (s, e) =>
-                    {
-                        try
-                        {
-                            var current = await QueuedTask.Run(() =>
-                            {
-                                var lv = LayoutView.Active;
-                                return lv?.Layout?.MapSeries?.CurrentPageNumber;
-                            });
-
-                            if (current != _lastPageNumber)
-                            {
-                                _lastPageNumber = current;
-                                _ = UpdateComboAsync();
-                            }
-                        }
-                        catch
-                        {
-                            // swallow - polling should continue
-                        }
-                    };
-                    _mapSeriesPollTimer.Start();
-                }
-            });
+            // Fire-and-forget refresh; do not block the watcher or UI thread.
+            _ = UpdateComboAsync();
         }
+        #endregion
 
-        private void MapSeries_PropertyChanged(object? sender, PropertyChangedEventArgs e)
-        {
-            // react to page index/name changes
-            if (e.PropertyName == nameof(MapSeries.CurrentPageNumber) || e.PropertyName == nameof(MapSeries.CurrentPageName))
-            {
-                // page changed — refresh the combo
-                _ = UpdateComboAsync();
-            }
-        }
-
+        #region Selection handling
+        // When the user selects an item in the combo, zoom to that feature geometry in the active MapView.
+        // We call MapView.Active?.ZoomToAsync which is safe to call from the UI thread.
         protected override void OnSelectionChange(ComboBoxItem item)
         {
             if (item is FeatureComboBoxItem featComboBoxItem)
             {
+                // Smooth zoom to the feature's geometry over 1.5 seconds.
                 MapView.Active?.ZoomToAsync(featComboBoxItem.Geometry, TimeSpan.FromSeconds(1.5));
             }
         }
+        #endregion
     }
 }
