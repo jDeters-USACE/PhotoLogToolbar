@@ -64,6 +64,7 @@ namespace PhotoLogToolbar
             // Subscribe to the central MapSeries watcher. When the watcher detects a page change
             // it will invoke OnMapSeriesPageChanged which refreshes this combo.
             MapSeriesWatcher.Instance.Subscribe(OnMapSeriesPageChanged);
+            MapLayoutWatcher.Instance.Subscribe(OnLayoutChanged);
         }
 
         // Finalizer (destructor): ensure we unsubscribe from the centralized watcher to avoid
@@ -74,6 +75,7 @@ namespace PhotoLogToolbar
             try
             {
                 MapSeriesWatcher.Instance.Unsubscribe(OnMapSeriesPageChanged);
+                MapLayoutWatcher.Instance.Unsubscribe(OnLayoutChanged);
             }
             catch
             {
@@ -289,6 +291,13 @@ namespace PhotoLogToolbar
             _ = UpdateComboAsync();
         }
         #endregion
+
+        // Layout change handler invoked by MapLayoutWatcher.
+        private void OnLayoutChanged(object? sender, MapLayoutWatcher.LayoutChangedEventArgs e)
+        {
+            // Fire-and-forget refresh; do not block the watcher or UI thread.
+            _ = UpdateComboAsync();
+        }
 
         #region Selection handling
         // When the user selects an item in the combo, zoom to that feature geometry in the active MapView.
