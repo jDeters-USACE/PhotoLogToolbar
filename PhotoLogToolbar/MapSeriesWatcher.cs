@@ -3,6 +3,8 @@ using ArcGIS.Desktop.Layouts;
 using System;
 using System.Timers;
 
+#nullable enable
+
 namespace PhotoLogToolbar
 {
     /*

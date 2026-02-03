@@ -5,6 +5,8 @@ using System;
 using System.Timers;
 using System.Linq;
 
+#nullable enable
+
 namespace PhotoLogToolbar
 {
     /// <summary>

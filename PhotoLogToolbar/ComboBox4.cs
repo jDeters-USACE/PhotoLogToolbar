@@ -21,6 +21,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
+#nullable enable
+
 namespace PhotoLogToolbar
 {
     /// <summary>
@@ -212,8 +214,12 @@ namespace PhotoLogToolbar
             var featureLayer = map?.GetLayersAsFlattenedList().OfType<FeatureLayer>().FirstOrDefault(fl => fl.Name.Equals("Photo Location"));
             if (featureLayer == null)
             {
-                // If the layer is not present, enable the control and exit gracefully.
-                Enabled = true;
+                // If the layer is not present, Populate "N/A", Disable the control, and exit gracefully.
+                Clear();
+                Add(new ComboBoxItem("N/A", null, "Photo Location layer not found in Main Map Frame"));
+                SelectedItem = ItemCollection.FirstOrDefault();
+                Enabled = false;
+                _isInitialized = true;
                 return;
             }
 
@@ -249,7 +255,7 @@ namespace PhotoLogToolbar
                     while (featCursor.MoveNext())
                     {
                         using var feature = featCursor.Current as Feature;
-                        Add(new FeatureComboBoxItem(feature["ViewHeight"]?.ToString(), feature.GetShape().Clone()));
+                        Add(new ComboBoxItem(feature["ViewHeight"]?.ToString()));
                     }
                 }
                 else
@@ -259,7 +265,7 @@ namespace PhotoLogToolbar
                     while (featCursor.MoveNext())
                     {
                         using var feature = featCursor.Current as Feature;
-                        Add(new FeatureComboBoxItem(feature["ViewHeight"]?.ToString(), feature.GetShape().Clone()));
+                        Add(new ComboBoxItem(feature["ViewHeight"]?.ToString()));
                     }
                 }
 
@@ -289,11 +295,11 @@ namespace PhotoLogToolbar
         // We call MapView.Active?.ZoomToAsync which is safe to call from the UI thread.
         protected override void OnSelectionChange(ComboBoxItem item)
         {
-            if (item is FeatureComboBoxItem featComboBoxItem)
-            {
-                // Smooth zoom to the feature's geometry over 1.5 seconds.
-                MapView.Active?.ZoomToAsync(featComboBoxItem.Geometry, TimeSpan.FromSeconds(1.5));
-            }
+            //if (item is FeatureComboBoxItem featComboBoxItem)
+            //{
+            //    // Smooth zoom to the feature's geometry over 1.5 seconds.
+            //    MapView.Active?.ZoomToAsync(featComboBoxItem.Geometry, TimeSpan.FromSeconds(1.5));
+            //}
         }
         #endregion
     }
