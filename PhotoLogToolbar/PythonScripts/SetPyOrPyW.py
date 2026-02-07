@@ -20,7 +20,7 @@
 ##  ------------------------------- ##
 ##     Written by: Jason Deters     ##
 ##  ------------------------------- ##
-##   Last Edited on:  20-Jun-2017   ##
+##   Last Edited on:  06-Feb-2026   ##
 ##  ------------------------------- ##
 ######################################
 
@@ -45,8 +45,7 @@ def SetToPythonW():
     L.Wrap("----------Start of SetPyOrPyW.SetToPythonW()-----------")
     L.Wrap(str(time.ctime()))
     for ver in versions:
-        path = f"C:/Program Files/ArcGIS/Pro/bin/Python/envs/arcgispro-py{ver}/python.exe"
-        path = "C:/Python27/ArcGIS" + ver + "/pythonw.exe"
+        path = f"C:/Program Files/ArcGIS/Pro/bin/Python/envs/arcgispro-py{ver}/pythonw.exe"
         test = os.path.exists(path)
         if test:
             latest_path = path
@@ -66,7 +65,7 @@ def SetToPython():
     L.Wrap("----------Start of SetPyOrPyW.SetToPython()-----------")
     L.Wrap(str(time.ctime()))
     for ver in versions:
-        path = "C:/Python27/ArcGIS" + ver + "/python.exe"
+        path = f"C:/Program Files/ArcGIS/Pro/bin/Python/envs/arcgispro-py{ver}/python.exe"
         test = os.path.exists(path)
         if test:
             latest_path = path
@@ -82,6 +81,6 @@ def SetToPython():
 
 if __name__ == '__main__':
     W = SetToPythonW()
-    print W
+    print(W)
     P = SetToPython()
-    print P
+    print(P)

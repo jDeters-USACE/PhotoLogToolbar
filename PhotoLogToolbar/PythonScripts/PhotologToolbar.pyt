@@ -11,7 +11,7 @@ class Toolbox:
         self.alias = "toolbox"
 
         # List of tool classes associated with this toolbox
-        self.tools = [CreateNewPhotoLog, EditExistingPhotoLogParameters]
+        self.tools = [CreateNewPhotoLog, EditExistingPhotoLogParameters, EditField]
 
 
 class CreateNewPhotoLog:
@@ -210,6 +210,79 @@ class EditExistingPhotoLogParameters:
 
         # Execute function
         editProject.Main(PhotoFolder, ProjectName, USACE_ID, Photographer)
+        return
+
+    def postExecute(self, parameters):
+        """This method takes place after outputs are processed and
+        added to the display."""
+        return
+
+class EditField:
+    def __init__(self):
+        """Define the tool (tool name is the name of the class)."""
+        self.label = "Set a Field Value"
+        self.canRunInBackground = False
+        self.description = ""
+
+    def getParameterInfo(self):
+        """Define the tool parameters."""
+        # Field Name
+        param_1 = arcpy.Parameter()
+        param_1.name = u'FieldName'
+        param_1.displayName = u'Name of the field to be updated'
+        param_1.parameterType = 'Required'
+        param_1.direction = 'Input'
+        param_1.datatype = u'String'
+
+        # Field Value
+        param_2 = arcpy.Parameter()
+        param_2.name = u'FieldValue'
+        param_2.displayName = u'Value to which the field will be set'
+        param_2.parameterType = 'Required'
+        param_2.direction = 'Input'
+        param_2.datatype = u'String'
+
+
+        params = [param_1, param_2]
+        return params
+
+    def isLicensed(self):
+        """Set whether the tool is licensed to execute."""
+        return True
+
+    def updateParameters(self, parameters):
+        """Modify the values and properties of parameters before internal
+        validation is performed.  This method is called whenever a parameter
+        has been changed."""
+        return
+
+    def updateMessages(self, parameters):
+        """Modify the messages created by internal validation for each tool
+        parameter. This method is called after internal validation."""
+        return
+
+    def execute(self, parameters, messages):
+        """The source code of the tool."""
+        # Import Built-in Libraries
+        import os
+        import sys
+        import importlib
+
+        # define install folder path
+        scripts_folder = os.path.dirname(os.path.realpath(__file__))
+        install_folder = os.path.split(scripts_folder)[0]
+        
+        # Import Custom Libraries
+        sys.path.append(scripts_folder)
+        import editField
+        importlib.reload(editField)
+
+        # Get Parameters
+        FieldName = str(parameters[0].value)
+        FieldValue = str(parameters[1].value)
+
+        # Execute function
+        editField.Main(FieldName, FieldValue)
         return
 
     def postExecute(self, parameters):
