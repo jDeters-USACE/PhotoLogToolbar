@@ -34,8 +34,6 @@
         </group>
         <group id="PhotoLogToolbar_Group3" caption="Marker Point Tools" appearsOnAddInTab="false">
           <tool refID="PhotoLogToolbar_ConstructionTool1" size="large" />
-          <tool refID="PhotoLogToolbar_MapTool1" size="large" />
-          <buttonPalette refID="PhotoLogToolbar_ButtonPalette1" />
         </group>
         <group id="PhotoLogToolbar_Group4" caption="Attributes" appearsOnAddInTab="false">
           <comboBox refID="PhotoLogToolbar_ComboBox1" />
@@ -48,48 +46,68 @@
       </groups>
       <controls>
         <!-- add your controls here -->
-        <button id="PhotoLogToolbar_Menu1_Items_Button1" caption="New Project" className="Menu1_button1" loadOnClick="true" smallImage="GenericButtonGreen16" largeImage="GenericButtonGreen32">
-          <tooltip heading="Menu Button 1">ToolTip<disabledText /></tooltip></button>
-        <button id="PhotoLogToolbar_Menu1_Items_Button2" caption="Edit Project" className="Menu1_button2" loadOnClick="true" smallImage="GenericButtonGreen16" largeImage="GenericButtonGreen32">
-          <tooltip heading="Menu Button 2">ToolTip<disabledText /></tooltip></button>
+        <button id="PhotoLogToolbar_Menu1_Items_Button1"
+				caption="New Project"
+				className="Menu1_button1"
+				loadOnClick="true"
+				smallImage="GenericButtonGreen16"
+				largeImage="GenericButtonGreen32">
+			<tooltip heading="Menu Button 1">
+				ToolTip
+				<disabledText />
+			</tooltip>
+        </button>
+        <button id="PhotoLogToolbar_Menu1_Items_Button2"
+				caption="Edit Project"
+				className="Menu1_button2"
+				loadOnClick="true"
+				smallImage="GenericButtonGreen16"
+				largeImage="GenericButtonGreen32">
+			<tooltip heading="Menu Button 2">
+				ToolTip
+				<disabledText />
+			</tooltip>
+        </button>
         <button id="PhotoLogToolbar_Menu1_Items_Button3" caption="Export Photo Log" className="Menu1_button3" loadOnClick="true" smallImage="GenericButtonGreen16" largeImage="GenericButtonGreen32">
-          <tooltip heading="Menu Button 3">ToolTip<disabledText /></tooltip></button>
-        <button id="PhotoLogToolbar_ButtonPalette1_Items_Button1" caption="Palette Button 1" className="ButtonPalette1_button1" loadOnClick="true" smallImage="GenericButtonGrey16" largeImage="GenericButtonGrey32">
-          <tooltip heading="Palette Button 1">ToolTip<disabledText /></tooltip></button>
-        <button id="PhotoLogToolbar_ButtonPalette1_Items_Button2" caption="Palette Button 2" className="ButtonPalette1_button2" loadOnClick="true" smallImage="GenericButtonGrey16" largeImage="GenericButtonGrey32">
-          <tooltip heading="Palette Button 2">ToolTip<disabledText /></tooltip></button>
-        <button id="PhotoLogToolbar_ButtonPalette1_Items_Button3" caption="Palette Button 3" className="ButtonPalette1_button3" loadOnClick="true" smallImage="GenericButtonGrey16" largeImage="GenericButtonGrey32">
-          <tooltip heading="Palette Button 3">ToolTip<disabledText /></tooltip></button>
+          <tooltip heading="Menu Button 3">ToolTip<disabledText /></tooltip>
+        </button>
         <comboBox id="PhotoLogToolbar_ComboBox1" caption="Photo Number" className="ComboBox1" itemWidth="45" extendedCaption="Extended Caption" isEditable="false" isReadOnly="true" resizable="true">
-          <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip></comboBox>
+          <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
+        </comboBox>
         <comboBox id="PhotoLogToolbar_ComboBox2" caption="Orientation" className="ComboBox2" itemWidth="100" extendedCaption="Extended Caption" isEditable="false" isReadOnly="true" resizable="true">
-          <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip></comboBox>
+          <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
+        </comboBox>
         <comboBox id="PhotoLogToolbar_ComboBox3" caption="Heading (Degrees)" className="ComboBox3" itemWidth="45" extendedCaption="Extended Caption" isEditable="true" isReadOnly="false" resizable="true">
-          <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip></comboBox>
+          <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
+        </comboBox>
         <comboBox id="PhotoLogToolbar_ComboBox4" caption="Map Scale" className="ComboBox4" itemWidth="70" extendedCaption="Extended Caption" isEditable="true" isReadOnly="false" resizable="true">
-          <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip></comboBox>
+          <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
+        </comboBox>
         <comboBox id="PhotoLogToolbar_ComboBox5" caption="View Distance (m)" className="ComboBox5" itemWidth="50" extendedCaption="Extended Caption" isEditable="true" isReadOnly="false" resizable="true">
-          <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip></comboBox>
+          <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
+        </comboBox>
         <comboBox id="PhotoLogToolbar_ComboBox6" caption="Description" className="ComboBox6" itemWidth="300" extendedCaption="Extended Caption" isEditable="true" isReadOnly="false" resizable="true">
-          <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip></comboBox>
+          <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
+        </comboBox>
         <button id="PhotoLogToolbar_Button1" caption="Button 1" className="Button1" loadOnClick="true" smallImage="GenericButtonBlue16" largeImage="GenericButtonBlue32">
-          <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip></button>
-        <tool id="PhotoLogToolbar_ConstructionTool1" categoryRefID="esri_editing_construction_point" caption="ConstructionTool 1" className="ConstructionTool1" loadOnClick="true" smallImage="GenericButtonRed16" largeImage="GenericButtonRed32">
-          <!--note: use esri_editing_construction_polyline,  esri_editing_construction_polygon for categoryRefID as needed-->
-          <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip><content guid="3b4dbe6a-0d27-41ee-8d63-71164caf0361" /></tool>
-        <customControl id="PhotoLogToolbar_CustomControl1" caption="CustomControl 1" className="CustomControl1ViewModel" loadOnClick="true" smallImage="GenericButtonPurple16" largeImage="GenericButtonPurple32"><content className="CustomControl1View" />
-          <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip></customControl>
+          <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
+        </button>
         <button id="PhotoLogToolbar_Button2" caption="Button 2" className="Button2" loadOnClick="true" smallImage="GenericButtonBlue16" largeImage="GenericButtonBlue32">
-          <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip></button>
-        <tool id="PhotoLogToolbar_MapTool1" caption="MapTool 1" className="MapTool1" loadOnClick="true" smallImage="GenericButtonRed16" largeImage="GenericButtonRed32" condition="esri_mapping_mapPane">
-          <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip></tool>
-	  </controls>
+          <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
+        </button>
+        <tool id="PhotoLogToolbar_ConstructionTool1" 
+			  categoryRefID="esri_layouts_editing_Tools"
+			  caption="Place Marker"
+			  className="ConstructionTool1"
+			  loadOnClick="true"
+			  smallImage="GenericButtonRed16"
+			  largeImage="GenericButtonRed32">
+			<tooltip heading="Marker Tool">Place marker on layout<disabledText />
+			</tooltip>
+        </tool>
+
+      </controls>
       <menus>
-        <!--        <menu id="esri_layouts_mapSeriesPageContextMenu" caption="PageContextMenu" extendedCaption="PageContextMenu" contextMenu="true">
-          <button refID="esri_layouts_pageNavigate"/>
-          <button refID="esri_layouts_exportMapSeries"/>
-          <button refID="esri_layouts_printMapSeries"/>
-        </menu>-->
         <menu id="PhotoLogToolbar_Menu1" caption="Menu 1" smallImage="GenericButtonGreen16" largeImage="GenericButtonGreen32">
           <button refID="PhotoLogToolbar_Menu1_Items_Button1" />
           <button refID="PhotoLogToolbar_Menu1_Items_Button2" />
@@ -97,11 +115,6 @@
         </menu>
       </menus>
       <palettes>
-        <buttonPalette id="PhotoLogToolbar_ButtonPalette1" caption="Palette Button 1" dropDown="false" menuStyle="true">
-          <button refID="PhotoLogToolbar_ButtonPalette1_Items_Button1" />
-          <button refID="PhotoLogToolbar_ButtonPalette1_Items_Button2" />
-          <button refID="PhotoLogToolbar_ButtonPalette1_Items_Button3" />
-        </buttonPalette>
       </palettes>
     </insertModule>
   </modules>
