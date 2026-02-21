@@ -113,6 +113,9 @@ namespace PhotoLogToolbar
 
                     if (editOp.Execute())
                     {
+                        // Explicitly clear selection on the layer to be safe
+                        markerLayer.ClearSelection();
+
                         await ArcGIS.Desktop.Core.Project.Current.SaveEditsAsync();
                     }
 
