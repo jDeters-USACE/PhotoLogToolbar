@@ -3,6 +3,7 @@ using ArcGIS.Core.Data;
 using ArcGIS.Core.Geometry;
 using ArcGIS.Desktop.Catalog;
 using ArcGIS.Desktop.Core;
+using ArcGIS.Desktop.Core.Geoprocessing;
 using ArcGIS.Desktop.Editing;
 using ArcGIS.Desktop.Extensions;
 using ArcGIS.Desktop.Framework;
@@ -18,6 +19,8 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Reflection;
+using System.IO;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -218,7 +221,7 @@ namespace PhotoLogToolbar
             {
                 // If the layer is not present, Populate "N/A", Disable the control, and exit gracefully.
                 Clear();
-                Add(new ComboBoxItem("N/A", null, "Photo Location layer not found in Main Map Frame"));
+                Add(new ComboBoxItem("Photo Location layer not found in Main Map Frame", null, "Photo Location layer not found in Main Map Frame"));
                 SelectedItem = ItemCollection.FirstOrDefault();
                 Enabled = false;
                 _isInitialized = true;
@@ -311,5 +314,61 @@ namespace PhotoLogToolbar
             //}
         }
         #endregion
+        protected override async void OnEnter()
+        {
+            // Get text from ComboBox
+            // Determine current text value of the ComboBox control.
+            string fieldValue;
+
+            // Prefer explicit Text property when user typed or control has text.
+            if (!string.IsNullOrWhiteSpace(this.Text))
+            {
+                fieldValue = this.Text;
+            }
+            else
+            {
+                // Fall back to SelectedItem. If it's a ComboBoxItem use its Text property.
+                if (SelectedItem is ComboBoxItem cbi && !string.IsNullOrWhiteSpace(cbi.Text))
+                {
+                    fieldValue = cbi.Text;
+                }
+                else
+                {
+                    // Final fallback to SelectedItem.ToString() or empty string.
+                    fieldValue = SelectedItem?.ToString() ?? string.Empty;
+                }
+            }
+
+            // Set field name
+            string fieldName = "MetersOfView";
+
+            // Setup paths
+            string assemblyDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string pythonScriptsDir = Path.Combine(assemblyDir, "PythonScripts");
+            string toolBoxPath = Path.Combine(pythonScriptsDir, "PhotologToolbar.pyt");
+
+            // Use the backslash specifically to separate the .pyt from the Tool Class Name
+            string toolName = $@"{toolBoxPath}\EditField";
+
+            // Verify the file actually exists before trying to open it
+            if (!File.Exists(toolBoxPath))
+            {
+                MessageBox.Show($"Toolbox not found at: {toolBoxPath}");
+                return;
+            }
+
+            // Set arguments
+            var args = Geoprocessing.MakeValueArray(fieldName, fieldValue);
+
+            // Run the geoprocessing tool on the QueuedTask thread; use an async lambda so awaiting inside is valid.
+            await QueuedTask.Run(async () =>
+            {
+                var result = await Geoprocessing.ExecuteToolAsync(toolName, args);
+                // Optionally inspect result here or handle messages.
+            });
+
+            // Fire-and-forget refresh; do not block the watcher or UI thread.
+            _ = UpdateComboAsync();
+        }
     }
 }

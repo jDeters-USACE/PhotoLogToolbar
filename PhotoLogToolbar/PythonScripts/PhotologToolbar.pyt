@@ -11,7 +11,7 @@ class Toolbox:
         self.alias = "toolbox"
 
         # List of tool classes associated with this toolbox
-        self.tools = [CreateNewPhotoLog, EditExistingPhotoLogParameters, EditField]
+        self.tools = [CreateNewPhotoLog, EditExistingPhotoLogParameters, EditField, recreateFOV]
 
 
 class CreateNewPhotoLog:
@@ -63,17 +63,8 @@ class CreateNewPhotoLog:
         param_5.direction = 'Input'
         param_5.datatype = u'Shapefile'
         param_5.value = u''
-
-        # Edit Before Rendering
-        param_6 = arcpy.Parameter()
-        param_6.name = u'EditBeforeRendering'
-        param_6.displayName = u'Edit the MXD before rendering to PDF?'
-        param_6.parameterType = 'Required'
-        param_6.direction = 'Input'
-        param_6.datatype = u'Boolean'
-        param_6.value = u'false'
         
-        params = [param_1, param_2, param_3, param_4, param_5, param_6]
+        params = [param_1, param_2, param_3, param_4, param_5]
         return params
 
     def isLicensed(self):
@@ -115,11 +106,10 @@ class CreateNewPhotoLog:
         RawPhotoPoints = str(parameters[4].value)
         if RawPhotoPoints == u'':
             RawPhotoPoints = None
-        EditBeforeRendering = parameters[5].value
         OutputFolder = os.path.split(PhotoFolder)[0]
 
         # Execute function
-        newProject.Main(PhotoFolder,OutputFolder,ProjectName,USACE_ID,Photographer,RawPhotoPoints,EditBeforeRendering)
+        newProject.Main(PhotoFolder,OutputFolder,ProjectName,USACE_ID,Photographer,RawPhotoPoints)
         return
 
     def postExecute(self, parameters):
@@ -276,6 +266,8 @@ class EditField:
         sys.path.append(scripts_folder)
         import editField
         importlib.reload(editField)
+        import fovUpdater
+        importlib.reload(fovUpdater)
 
         # Get Parameters
         FieldName = str(parameters[0].value)
@@ -283,6 +275,80 @@ class EditField:
 
         # Execute function
         editField.Main(FieldName, FieldValue)
+        arcpy.AddMessage(f'FieldName = {FieldName}')
+        if FieldName == "Heading" or "Orientation" or "MetersOfView":
+            arcpy.AddMessage('Reloading FOV')
+            fovUpdater.Main(CurrentPhoto=True)
+
+        return
+
+    def postExecute(self, parameters):
+        """This method takes place after outputs are processed and
+        added to the display."""
+        return
+
+class recreateFOV:
+    def __init__(self):
+        """Define the tool (tool name is the name of the class)."""
+        self.label = "Rebuild FOV Polygons"
+        self.canRunInBackground = False
+        self.description = ""
+
+    def getParameterInfo(self):
+        """Define the tool parameters."""
+
+        # Edit Before Rendering
+        param_1 = arcpy.Parameter()
+        param_1.name = u'CurrentPhoto'
+        param_1.displayName = u'Impact only the currently selected photo?'
+        param_1.parameterType = 'Required'
+        param_1.direction = 'Input'
+        param_1.datatype = u'Boolean'
+        param_1.value = u'false'
+
+        params = [param_1]
+        return params
+
+    def isLicensed(self):
+        """Set whether the tool is licensed to execute."""
+        return True
+
+    def updateParameters(self, parameters):
+        """Modify the values and properties of parameters before internal
+        validation is performed.  This method is called whenever a parameter
+        has been changed."""
+        return
+
+    def updateMessages(self, parameters):
+        """Modify the messages created by internal validation for each tool
+        parameter. This method is called after internal validation."""
+        return
+
+    def execute(self, parameters, messages):
+        """The source code of the tool."""
+        # Import Built-in Libraries
+        import os
+        import sys
+        import importlib
+
+        # define install folder path
+        scripts_folder = os.path.dirname(os.path.realpath(__file__))
+        install_folder = os.path.split(scripts_folder)[0]
+        
+        # Import Custom Libraries
+        sys.path.append(scripts_folder)
+        import fovUpdater
+        importlib.reload(fovUpdater)
+
+        # Get Parameters
+        restrict_to_current_photo = str(parameters[0].value)
+        if restrict_to_current_photo == u'false':
+            restrict_setting = False
+        else:
+            restrict_setting = True
+
+        # Execute function
+        fovUpdater.Main(CurrentPhoto=restrict_setting)
         return
 
     def postExecute(self, parameters):

@@ -50,6 +50,8 @@ import JLog
 importlib.reload(JLog)
 import backup_images
 importlib.reload(backup_images)
+import fovUpdater
+importlib.reload(fovUpdater)
 
 # Create PrintLog Class
 L = JLog.PrintLog(Log="C:\\Temp\\PhotoLogToolbar_LOG.txt", Delete=True)
@@ -77,8 +79,6 @@ def Offset(Lat,Lon,Degrees,Meters=1000):
     dLon = mLon/(R*math.cos(math.pi*Lat/180))
     # Offset position, decimal degrees
     Lat0 = Lat + dLat * 180/math.pi
-    print(type(Lon))
-    print(type(dLon))
     Lon0 = float(Lon) + float(dLon * 180/math.pi)
     del R, mLat, mLon, dLat, dLon
     return Lat0,Lon0
@@ -312,6 +312,9 @@ def createPhotoPoints(GDB, PhotoFolder, ProjectName, USACE_ID, Photographer, Raw
                 row[10] = 'Compass'
                 Num += 1
                 cursor.updateRow(row)
+        # Update the FOV Polygons to reflect any changes to the Photo Location layer
+        L.Wrap('Updating FOV Polygons to reflect changes from Trimble Points')
+        fovUpdater.Simple(photo_location_path=PhotoPoints, fov_path=fovPath)
     L.Time(Start,'updatePhotoPoints()')
     del Start
     L.Wrap('----End of createPhotoPoints()----')
@@ -321,16 +324,12 @@ def createPhotoPoints(GDB, PhotoFolder, ProjectName, USACE_ID, Photographer, Raw
 
 
 
-
-
-
 def Main(PhotoFolder,
          OutputFolder,
          ProjectName,
          USACE_ID,
          Photographer,
-         RawPhotoPoints=None,
-         EditBeforeRendering=False):
+         RawPhotoPoints=None):
     Start = time.perf_counter()
     L = JLog.PrintLog(Log="C:\\Temp\\PhotoLogToolbar_LOG.txt", Indent=3)
     try:
@@ -379,38 +378,63 @@ def Main(PhotoFolder,
             xx = arcpy.GetMessages()
             L.Wrap(xx)
             time.sleep(30)
+
     # Create PhotoPoints Feature Class using reference
     L.Wrap('Creating PhotoPoints Feature Class using reference file...')
     template_path = install_folder + r'\Template Files\GIS_Data.gdb\PhotoPoints'
     spatial_reference_path = install_folder + r'\Template Files\WGS_1984.prj'
-    # Debug -  announce vars
-    L.Wrap(f'template path = {template_path}')
-    arcpy.CreateFeatureclass_management(out_path=GDB,
-                                        out_name="PhotoPoints",
-                                        geometry_type="POINT",
-                                        template=template_path,
-                                        has_m='DISABLED',
-                                        has_z='DISABLED',
-                                        spatial_reference="GCS_WGS_1984")
-    
-    # Create FOV Polygon Feature Class
-    fovFC = arcpy.CreateFeatureclass_management(out_path=GDB,
-                                                out_name='FOV',
-                                                geometry_type='POLYGON',
-                                                template='#',
-                                                has_m='DISABLED',
-                                                has_z='DISABLED',
-                                                spatial_reference="GCS_WGS_1984")
-    arcpy.management.AddField(fovFC, "Number", "SHORT")
+    with arcpy.EnvManager(XYResolution="0.0000000000001 Unknown"):
+        arcpy.management.CreateFeatureclass(
+            out_path=GDB,
+            out_name="PhotoPoints",
+            geometry_type="POINT",
+            template=template_path,
+            has_m="DISABLED",
+            has_z="DISABLED",
+            spatial_reference='GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],VERTCS["EGM96_Geoid",VDATUM["EGM96_Geoid"],PARAMETER["Vertical_Shift",0.0],PARAMETER["Direction",1.0],UNIT["Foot_US",0.3048006096012192]];-400 -400 11258999068426.2;-100000 3048.00609601219;-100000 10000;8.98315284119521E-09;3.28083333333333E-03;0.001;IsHighPrecision',
+            config_keyword="",
+            spatial_grid_1=0,
+            spatial_grid_2=0,
+            spatial_grid_3=0,
+            out_alias="",
+            oid_type="SAME_AS_TEMPLATE"
+        )
+        # Create FOV Polygon Feature Class
+        fovFC = arcpy.management.CreateFeatureclass(
+            out_path=GDB,
+            out_name="FOV",
+            geometry_type="POLYGON",
+            template=None,
+            has_m="DISABLED",
+            has_z="DISABLED",
+            spatial_reference='GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],VERTCS["EGM96_Geoid",VDATUM["EGM96_Geoid"],PARAMETER["Vertical_Shift",0.0],PARAMETER["Direction",1.0],UNIT["Foot_US",0.3048006096012192]];-400 -400 11258999068426.2;-100000 3048.00609601219;-100000 10000;8.98315284119521E-09;3.28083333333333E-03;0.001;IsHighPrecision',
+            config_keyword="",
+            spatial_grid_1=0,
+            spatial_grid_2=0,
+            spatial_grid_3=0,
+            out_alias="",
+            oid_type="SAME_AS_TEMPLATE"
+        )
+        # Create Marker Point Feature Class
+        mpFC = arcpy.management.CreateFeatureclass(
+            out_path=GDB,
+            out_name="MarkerPoint",
+            geometry_type="POINT",
+            template=None,
+            has_m="DISABLED",
+            has_z="DISABLED",
+            spatial_reference='GEOGCS["GCS_WGS_1984",DATUM["D_WGS_1984",SPHEROID["WGS_1984",6378137.0,298.257223563]],PRIMEM["Greenwich",0.0],UNIT["Degree",0.0174532925199433]],VERTCS["EGM96_Geoid",VDATUM["EGM96_Geoid"],PARAMETER["Vertical_Shift",0.0],PARAMETER["Direction",1.0],UNIT["Foot_US",0.3048006096012192]];-400 -400 11258999068426.2;-100000 3048.00609601219;-100000 10000;8.98315284119521E-09;3.28083333333333E-03;0.001;IsHighPrecision',
+            config_keyword="",
+            spatial_grid_1=0,
+            spatial_grid_2=0,
+            spatial_grid_3=0,
+            out_alias="",
+            oid_type="SAME_AS_TEMPLATE"
+        )
 
-    # Create Marker Point Feature Class
-    mpFC = arcpy.CreateFeatureclass_management(out_path=GDB,
-                                               out_name='MarkerPoint',
-                                               geometry_type='POINT',
-                                               template='#',
-                                               has_m='DISABLED',
-                                               has_z='DISABLED',
-                                               spatial_reference="GCS_WGS_1984")
+    # Add Number field to fovFC
+    arcpy.management.AddField(fovFC, "Number", "SHORT")
+    
     # Copying TerraSync Photographs Feature Class using reference
     TerraSync_Photographs = None
     if str(RawPhotoPoints) != "None":    
@@ -420,7 +444,7 @@ def Main(PhotoFolder,
                                                     out_name='TerraSync_Photographs')
         TerraSync_Photographs = GDB + '\\TerraSync_Photographs'
     
-    # UPDATE ALL PhotoPoints FIELDS (Also provides the Aspect Ratio for choosing the MXD)
+    # UPDATE ALL PhotoPoints FIELDS (Also provides the Aspect Ratio for choosing the Layout Template)
     L.Wrap('executing updatePhotoPoints()...')
     AspectRatio, Taken_Date = createPhotoPoints(GDB,
                                                 PhotoFolder,
@@ -499,13 +523,11 @@ if __name__ == '__main__':
 #         ProjectName='California High-Speed Rail, Fresno to Bakersfield Section',
 #         USACE_ID='SPK-2009-01482',
 #         Photographer='Zachary Simmons',
-#         RawPhotoPoints=None,
-#         EditBeforeRendering=False)
+#         RawPhotoPoints=None)
     
     Main(PhotoFolder=r'C:\Users\L2RCSJ9D\OneDrive - US Army Corps of Engineers\Documents\ArcGIS\Projects\PhotoLogToolbar\Test Projects\201500644 - Stewart Water Diversion\2016-06-14 - Site Visit\test\test\Photographs',
          OutputFolder=r'C:\Users\L2RCSJ9D\OneDrive - US Army Corps of Engineers\Documents\ArcGIS\Projects\PhotoLogToolbar\Test Projects\201500644 - Stewart Water Diversion\2016-06-14 - Site Visit\test\test',
          ProjectName='Wildlands Mitigation Bank',
          USACE_ID='SPK-1993-00362',
          Photographer='Denielle Wise',
-         RawPhotoPoints=None,
-         EditBeforeRendering=False)
+         RawPhotoPoints=None)

@@ -97,7 +97,7 @@ def Offset(Lat,Lon,Degrees,Meters=1000):
     dLon = mLon/(R*math.cos(math.pi*Lat/180))
     # Offset position, decimal degrees
     Lat0 = Lat + dLat * 180/math.pi
-    Lon0 = Lon + dLon * 180/math.pi
+    Lon0 = float(Lon) + float(dLon * 180/math.pi)
     del R, mLat, mLon, dLat, dLon
     return Lat0,Lon0
 
@@ -118,12 +118,12 @@ def pageXY_to_mapXY(page_x, page_y):
     df_max_y = data_frame.extent.YMax
     df_proj_w = data_frame.extent.width
     df_proj_h = data_frame.extent.height
-    #ensure the coordinates are in the dataframe
+    # ensure the coordinates are in the dataframe
     if page_x < df_page_x_min or page_x > df_page_x_max:
         raise ValueError('X coordinate is not within map portion of the page.')
     if page_y < df_page_y_min or page_y > df_page_y_max:
         raise ValueError('Y coordinate is not within map portion of the page.')
-    #scale the projected coordinates to map units from the lower left of the data frame
+    # scale the projected coordinates to map units from the lower left of the data frame
     scale_x = (df_max_x - df_min_x)/(df_page_x_max - float(df_page_x_min))
     scale_y = (df_max_y - df_min_y)/(df_page_y_max - float(df_page_y_min))
     map_x = df_min_x + ((page_x - df_page_x_min)*scale_x)
