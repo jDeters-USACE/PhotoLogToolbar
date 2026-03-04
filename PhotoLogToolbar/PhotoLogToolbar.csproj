@@ -137,6 +137,9 @@
     <None Update="PythonScripts\JLog.py">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="PythonScripts\markerFunctions.py">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="PythonScripts\newProject.py">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
