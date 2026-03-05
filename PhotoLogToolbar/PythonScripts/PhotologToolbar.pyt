@@ -11,7 +11,8 @@ class Toolbox:
         self.alias = "toolbox"
 
         # List of tool classes associated with this toolbox
-        self.tools = [CreateNewPhotoLog, EditExistingPhotoLogParameters, EditField, recreateFOV, marker2location]
+        self.tools = [CreateNewPhotoLog, EditExistingPhotoLogParameters, EditField, recreateFOV,
+                      marker2location, marker2heading, marker2distance]
 
 
 class CreateNewPhotoLog:
