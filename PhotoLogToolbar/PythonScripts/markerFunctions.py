@@ -40,9 +40,6 @@ def marker2location(CurrentPhoto=True):
                             for row in search_cursor:
                                 mpLat = row[0]
                                 mpLon = row[1]
-                        
-                        # Clear Potential locks
-                        if 'row' in locals(): del row
 
                         # Get Photo Location Layer
                         for lyr in mf.map.listLayers():
@@ -69,22 +66,22 @@ def marker2location(CurrentPhoto=True):
                                         row[1] = mpLon
                                         update_cursor.updateRow(row)
 
-                                # Clear potential locks
-                                if 'update_cursor' in locals(): del update_cursor
-
                                 # Rebuild Field of View Polygon for new location
                                 fovUpdater.Main(CurrentPhoto=True)
 
-                        # Clear potential locks
-                        if 'search_cursor' in locals(): del search_cursor
-                        if 'row' in locals(): del row
+                                # Re-Center Map Frame on new Photo Location point
+                                sr_wgs_1984 = arcpy.SpatialReference(4326) 
+                                point = arcpy.Point(mpLon, mpLat)
+                                pt_geom = arcpy.PointGeometry(point, sr_wgs_1984)
+                                mf.panToExtent(pt_geom.extent)
 
-        # Refresh Map Series to Reflect Changes
-        if ms.enabled:
-            # Force the UI to reset the Map Series
-            ms.enabled = False
-            ms.enabled = True # This effectively "reboots" the Map Series in the Catalog
-            ms.refresh()
+
+                                # Refresh Map Series (Shouldn't be needed, but Map Frame freezes otherwise)
+                                if ms.enabled:
+                                    # Force the UI to reset the Map Series
+                                    ms.enabled = False
+                                    ms.enabled = True # This effectively "reboots" the Map Series in the Catalog
+                                    ms.refresh()
 
     else:
         arcpy.AddMessage("The current active view is not a layout. Move to a Mapped Photo Log Layout and re-run tool.")
