@@ -1,5 +1,11 @@
-import os
 import arcpy
+import importlib
+
+# Import Custom Libraries
+import JLog
+importlib.reload(JLog)
+import fovUpdater
+importlib.reload(fovUpdater)
 
 def Main(FieldName, FieldValue):
     # Set CurrentPhoto to True
@@ -42,6 +48,10 @@ def Main(FieldName, FieldValue):
                             for row in cursor:
                                 row[0] = FieldValue
                                 cursor.updateRow(row)
+
+                        # Update FOV if necessary
+                        if FieldName == "Heading" or "MetersOfView" or "Orientation":
+                            fovUpdater.Main(CurrentPhoto=True)
         
         # Clear potential locks
         if 'cursor' in locals(): del cursor
