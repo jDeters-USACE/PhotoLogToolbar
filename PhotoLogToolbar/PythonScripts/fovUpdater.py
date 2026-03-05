@@ -166,7 +166,7 @@ def Main(CurrentPhoto=False):
                                 # Define Feature Class
                                 fov_path = lyr.dataSource
 
-                                # Define Fields for Search Cursor
+                                # Define Fields for Update Cursor
                                 fields = ['SHAPE@', 'Number']
                                 
                                 # Create Update Cursor and re-create FOV for each row
@@ -197,6 +197,7 @@ def Main(CurrentPhoto=False):
                                         # Double-check that Number field matches
                                         if row[1] == Number:
                                             # Create FOV Polygon
+                                            L.Wrap('Recreating Field of View Polygon for Photograph {Number}...')
                                             try:
                                                 Heading = float(Heading)
                                             except:

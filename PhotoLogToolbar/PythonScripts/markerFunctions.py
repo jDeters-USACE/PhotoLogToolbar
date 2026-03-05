@@ -1,9 +1,15 @@
 import os
 import arcpy
+import importlib
 
-def Main(FieldName, FieldValue):
-    # Set CurrentPhoto to True
-    CurrentPhoto = True
+# Import Custom Libraries
+import JLog
+importlib.reload(JLog)
+import fovUpdater
+importlib.reload(fovUpdater)
+
+def marker2location(CurrentPhoto=True):
+    L = JLog.PrintLog(Log="C:\\Temp\\PhotoLogToolbar_LOG.txt", Indent=2)
     # Reference the project currently open in ArcGIS Pro
     aprx = arcpy.mp.ArcGISProject("CURRENT")
     # Get the active view
@@ -19,33 +25,59 @@ def Main(FieldName, FieldValue):
         for mf in active_layout.listElements("MAPFRAME_ELEMENT"):
             if "Photo Log - Main" in mf.map.name:
 
-                # Get Photo Location Layer
+                # Get Marker Point Layer
                 for lyr in mf.map.listLayers():
-                    if "Photo Location" in lyr.name:
+                    if "Marker Point" in lyr.name:
                         # Define Feature Class
-                        fc = lyr.dataSource
+                        fcMarkerPoint = lyr.dataSource
 
-                        # Determine Where Clause
-                        if CurrentPhoto:
-                            # Get the current page's OID - ms.pageRow provides the attribute row of the current page index
-                            current_oid = ms.pageRow.OBJECTID 
-                            # Get the OID field name
-                            oid_field = arcpy.Describe(fc).OIDFieldName
-                            # reate a Where Clause to target ONLY this row
-                            where = f"{oid_field} = {current_oid}"
-                        else:
-                            where = None
+                        # Define Fields for Search Cursor & Later Update Cursor
+                        fields = ['SHAPE@X', 'SHAPE@Y']
+                        
+                        # Create search Cursor and gather all selected rows in a list
+                        L.Wrap('Reading Marker Point Coordinates...')
+                        with arcpy.da.SearchCursor(fcMarkerPoint, fields) as search_cursor:
+                            for row in search_cursor:
+                                mpLat = row[0]
+                                mpLon = row[1]
+                        
+                        # Clear Potential locks
+                        if 'row' in locals(): del row
 
-                        # Update FieldName field using the FieldValue value
-                        arcpy.AddMessage(f"Setting {FieldName} to {FieldValue}...")
-                        with arcpy.da.UpdateCursor(fc,[FieldName], where_clause=where) as cursor:
-                            for row in cursor:
-                                row[0] = FieldValue
-                                cursor.updateRow(row)
-        
-        # Clear potential locks
-        if 'cursor' in locals(): del cursor
-        if 'row' in locals(): del row
+                        # Get Photo Location Layer
+                        for lyr in mf.map.listLayers():
+                            if "Photo Location" in lyr.name:
+                                # Define Feature Class
+                                fcPhotoPoints = lyr.dataSource
+
+                                # Determine Where Clause
+                                if CurrentPhoto:
+                                    # Get the current page's OID - ms.pageRow provides the attribute row of the current page index
+                                    current_oid = ms.pageRow.OBJECTID 
+                                    # Get the OID field name
+                                    oid_field = arcpy.Describe(fcPhotoPoints).OIDFieldName
+                                    # reate a Where Clause to target ONLY this row
+                                    where = f"{oid_field} = {current_oid}"
+                                else:
+                                    where = None
+
+                                # Update FieldName field using the FieldValue value
+                                L.Wrap(f"Setting Photo Location to {mpLat}, {mpLon}...")
+                                with arcpy.da.UpdateCursor(fcPhotoPoints, fields, where_clause=where) as update_cursor:
+                                    for row in update_cursor:
+                                        row[0] = mpLat
+                                        row[1] = mpLon
+                                        update_cursor.updateRow(row)
+
+                                # Clear potential locks
+                                if 'update_cursor' in locals(): del update_cursor
+
+                                # Rebuild Field of View Polygon for new location
+                                fovUpdater.Main(CurrentPhoto=True)
+
+                        # Clear potential locks
+                        if 'search_cursor' in locals(): del search_cursor
+                        if 'row' in locals(): del row
 
         # Refresh Map Series to Reflect Changes
         if ms.enabled:
