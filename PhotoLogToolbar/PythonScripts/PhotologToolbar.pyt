@@ -425,3 +425,143 @@ class marker2location:
         """This method takes place after outputs are processed and
         added to the display."""
         return
+
+
+class marker2heading:
+    def __init__(self):
+        """Define the tool (tool name is the name of the class)."""
+        self.label = "Marker Point --> Photo Heading"
+        self.canRunInBackground = False
+        self.description = "Point the Field of View polygon toward the Marker Point"
+
+    def getParameterInfo(self):
+        """Define the tool parameters."""
+
+        # Edit Before Rendering
+        param_1 = arcpy.Parameter()
+        param_1.name = u'CurrentPhoto'
+        param_1.displayName = u'Impact only the currently selected photo?'
+        param_1.parameterType = 'Required'
+        param_1.direction = 'Input'
+        param_1.datatype = u'Boolean'
+        param_1.value = u'true'
+
+        params = [param_1]
+        return params
+
+    def isLicensed(self):
+        """Set whether the tool is licensed to execute."""
+        return True
+
+    def updateParameters(self, parameters):
+        """Modify the values and properties of parameters before internal
+        validation is performed.  This method is called whenever a parameter
+        has been changed."""
+        return
+
+    def updateMessages(self, parameters):
+        """Modify the messages created by internal validation for each tool
+        parameter. This method is called after internal validation."""
+        return
+
+    def execute(self, parameters, messages):
+        """The source code of the tool."""
+        # Import Built-in Libraries
+        import os
+        import sys
+        import importlib
+
+        # define install folder path
+        scripts_folder = os.path.dirname(os.path.realpath(__file__))
+        install_folder = os.path.split(scripts_folder)[0]
+        
+        # Import Custom Libraries
+        sys.path.append(scripts_folder)
+        import markerFunctions
+        importlib.reload(markerFunctions)
+
+        # Get Parameters
+        restrict_to_current_photo = str(parameters[0].value)
+        if restrict_to_current_photo == u'false':
+            restrict_setting = False
+        else:
+            restrict_setting = True
+
+        # Execute function
+        markerFunctions.marker2heading(CurrentPhoto=restrict_setting)
+        return
+
+    def postExecute(self, parameters):
+        """This method takes place after outputs are processed and
+        added to the display."""
+        return
+
+
+class marker2distance:
+    def __init__(self):
+        """Define the tool (tool name is the name of the class)."""
+        self.label = "Marker Point --> View Distance"
+        self.canRunInBackground = False
+        self.description = "Truncate the Field of View Polygon at the distance the Marker Point is from the Photo Location"
+
+    def getParameterInfo(self):
+        """Define the tool parameters."""
+
+        # Edit Before Rendering
+        param_1 = arcpy.Parameter()
+        param_1.name = u'CurrentPhoto'
+        param_1.displayName = u'Impact only the currently selected photo?'
+        param_1.parameterType = 'Required'
+        param_1.direction = 'Input'
+        param_1.datatype = u'Boolean'
+        param_1.value = u'true'
+
+        params = [param_1]
+        return params
+
+    def isLicensed(self):
+        """Set whether the tool is licensed to execute."""
+        return True
+
+    def updateParameters(self, parameters):
+        """Modify the values and properties of parameters before internal
+        validation is performed.  This method is called whenever a parameter
+        has been changed."""
+        return
+
+    def updateMessages(self, parameters):
+        """Modify the messages created by internal validation for each tool
+        parameter. This method is called after internal validation."""
+        return
+
+    def execute(self, parameters, messages):
+        """The source code of the tool."""
+        # Import Built-in Libraries
+        import os
+        import sys
+        import importlib
+
+        # define install folder path
+        scripts_folder = os.path.dirname(os.path.realpath(__file__))
+        install_folder = os.path.split(scripts_folder)[0]
+        
+        # Import Custom Libraries
+        sys.path.append(scripts_folder)
+        import markerFunctions
+        importlib.reload(markerFunctions)
+
+        # Get Parameters
+        restrict_to_current_photo = str(parameters[0].value)
+        if restrict_to_current_photo == u'false':
+            restrict_setting = False
+        else:
+            restrict_setting = True
+
+        # Execute function
+        markerFunctions.marker2distance(CurrentPhoto=restrict_setting)
+        return
+
+    def postExecute(self, parameters):
+        """This method takes place after outputs are processed and
+        added to the display."""
+        return
