@@ -15,11 +15,12 @@ using ArcGIS.Desktop.Layouts;
 using ArcGIS.Desktop.Mapping;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Reflection;
-using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace PhotoLogToolbar
 {
@@ -89,8 +90,32 @@ namespace PhotoLogToolbar
 
     internal class Menu1_button3 : Button
     {
-        protected override void OnClick()
+        protected override async void OnClick()
         {
+            // Setup paths
+            string assemblyDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+            string pythonScriptsDir = Path.Combine(assemblyDir, "PythonScripts");
+            string toolBoxPath = Path.Combine(pythonScriptsDir, "PhotologToolbar.pyt");
+
+            // Use the backslash specifically to separate the .pyt from the Tool Class Name
+            string toolName = $@"{toolBoxPath}\exportPhotoLog";
+
+            // Verify the file actually exists before trying to open it
+            if (!File.Exists(toolBoxPath))
+            {
+                MessageBox.Show($"Toolbox not found at: {toolBoxPath}");
+                return;
+            }
+
+            // Set arguments
+            var args = Geoprocessing.MakeValueArray("true");
+
+            // Run the geoprocessing tool on the QueuedTask thread; use an async lambda so awaiting inside is valid.
+            await QueuedTask.Run(async () =>
+            {
+                var result = await Geoprocessing.ExecuteToolAsync(toolName, args);
+                // Optionally inspect result here or handle messages.
+            });
         }
     }
 

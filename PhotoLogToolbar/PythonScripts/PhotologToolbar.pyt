@@ -12,7 +12,7 @@ class Toolbox:
 
         # List of tool classes associated with this toolbox
         self.tools = [CreateNewPhotoLog, EditExistingPhotoLogParameters, EditField, recreateFOV,
-                      marker2location, marker2heading, marker2distance]
+                      marker2location, marker2heading, marker2distance, exportPhotoLog]
 
 
 class CreateNewPhotoLog:
@@ -560,6 +560,75 @@ class marker2distance:
 
         # Execute function
         markerFunctions.marker2distance(CurrentPhoto=restrict_setting)
+        return
+
+    def postExecute(self, parameters):
+        """This method takes place after outputs are processed and
+        added to the display."""
+        return
+
+class exportPhotoLog:
+    def __init__(self):
+        """Define the tool (tool name is the name of the class)."""
+        self.label = "Export Photo Log to PDF"
+        self.canRunInBackground = False
+        self.description = r"Saves the map series as a PDF in {ProjectFolder}\Export\Photo Logs"
+
+    def getParameterInfo(self):
+        """Define the tool parameters."""
+
+        # Edit Before Rendering
+        param_1 = arcpy.Parameter()
+        param_1.name = u'OpenPDF'
+        param_1.displayName = u'Open PDF after exporting?'
+        param_1.parameterType = 'Required'
+        param_1.direction = 'Input'
+        param_1.datatype = u'Boolean'
+        param_1.value = u'true'
+
+        params = [param_1]
+        return params
+
+    def isLicensed(self):
+        """Set whether the tool is licensed to execute."""
+        return True
+
+    def updateParameters(self, parameters):
+        """Modify the values and properties of parameters before internal
+        validation is performed.  This method is called whenever a parameter
+        has been changed."""
+        return
+
+    def updateMessages(self, parameters):
+        """Modify the messages created by internal validation for each tool
+        parameter. This method is called after internal validation."""
+        return
+
+    def execute(self, parameters, messages):
+        """The source code of the tool."""
+        # Import Built-in Libraries
+        import os
+        import sys
+        import importlib
+
+        # define install folder path
+        scripts_folder = os.path.dirname(os.path.realpath(__file__))
+        install_folder = os.path.split(scripts_folder)[0]
+        
+        # Import Custom Libraries
+        sys.path.append(scripts_folder)
+        import exportFunctions
+        importlib.reload(exportFunctions)
+
+        # Get Parameters
+        OpenPDF = str(parameters[0].value)
+        if OpenPDF == u'false':
+            open_pdf = False
+        else:
+            open_pdf = True
+
+        # Execute function
+        exportFunctions.export_and_open_photo_log(OpenPDF=open_pdf)
         return
 
     def postExecute(self, parameters):
