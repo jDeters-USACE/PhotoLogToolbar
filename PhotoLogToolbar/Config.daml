@@ -49,23 +49,55 @@
       </groups>
       <controls>
         <!-- add your controls here -->
-        <button id="PhotoLogToolbar_Menu1_Items_Button1" caption="New Project" className="Menu1_button1" loadOnClick="true" smallImage="JobCreate16" largeImage="JobCreate32">
-          <tooltip heading="Menu Button 1">
-				ToolTip
+        <button id="PhotoLogToolbar_Menu1_Items_Button1"
+				caption="New Project" 
+				className="Menu1_button1" 
+				loadOnClick="true" 
+				smallImage="JobCreate16" 
+				largeImage="JobCreate32">
+          <tooltip heading="New Project">
+				Create a new Mapped Photo Log
 				<disabledText /></tooltip>
         </button>
-        <button id="PhotoLogToolbar_Menu1_Items_Button2" caption="Edit Project" className="Menu1_button2" loadOnClick="true" smallImage="MetadataEdit16" largeImage="MetadataEdit32">
-          <tooltip heading="Menu Button 2">
-				ToolTip
+        <button id="PhotoLogToolbar_Menu1_Items_Button2" 
+				caption="Edit Project" 
+				className="Menu1_button2" 
+				loadOnClick="true" 
+				smallImage="MetadataEdit16" 
+				largeImage="MetadataEdit32">
+          <tooltip heading="Edit Current Project Parameters">
+				Open a form to edit the parameters for the currently active mapped photo log
 				<disabledText /></tooltip>
         </button>
-        <button id="PhotoLogToolbar_Menu1_Items_Button3" caption="Export Photo Log" className="Menu1_button3" loadOnClick="true" smallImage="PDFFile16" largeImage="PDFFile32">
-          <tooltip heading="Menu Button 3">ToolTip<disabledText /></tooltip>
+        <button id="PhotoLogToolbar_Menu1_Items_Button3" 
+				caption="Export Photo Log" 
+				className="Menu1_button3" 
+				loadOnClick="true" 
+				smallImage="PDFFile16" 
+				largeImage="PDFFile32">
+          <tooltip heading="Export Photo Log">
+			  Export all pages of the currently active Mapped Photo Log to a single PDF file<disabledText /></tooltip>
         </button>
-        <comboBox id="PhotoLogToolbar_ComboBox1" caption="Photo Number" className="ComboBox1" itemWidth="45" extendedCaption="Extended Caption" isEditable="false" isReadOnly="true" resizable="true">
-          <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
+        <comboBox id="PhotoLogToolbar_ComboBox1" 
+				  caption="Photo Number" 
+				  className="ComboBox1" 
+				  itemWidth="45" 
+				  extendedCaption="Extended Caption" 
+				  isEditable="false" 
+				  isReadOnly="true" 
+				  resizable="true">
+          <tooltip heading="Photo Number">
+			  The value of the "Number" field for the photograph represented by this Map Series page
+			  <disabledText /></tooltip>
         </comboBox>
-		  <comboBox id="PhotoLogToolbar_ComboBox7" caption="" className="ComboBox1" itemWidth="35" extendedCaption="Extended Caption" isEditable="false" isReadOnly="true" resizable="true">
+		  <comboBox id="PhotoLogToolbar_ComboBox7" 
+					caption="" 
+					className="ComboBox1" 
+					itemWidth="35" 
+					extendedCaption="Extended Caption" 
+					isEditable="false" 
+					isReadOnly="true" 
+					resizable="true">
 			  <tooltip heading="Tooltip Heading">
 				  Tooltip text<disabledText />
 			  </tooltip>

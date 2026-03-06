@@ -29,14 +29,14 @@ def Main(FieldName, FieldValue):
                 for lyr in mf.map.listLayers():
                     if "Photo Location" in lyr.name:
                         # Define Feature Class
-                        fc = lyr.dataSource
+                        fcPhotoPoints = lyr.dataSource
 
                         # Determine Where Clause
                         if CurrentPhoto:
                             # Get the current page's OID - ms.pageRow provides the attribute row of the current page index
                             current_oid = ms.pageRow.OBJECTID 
                             # Get the OID field name
-                            oid_field = arcpy.Describe(fc).OIDFieldName
+                            oid_field = arcpy.Describe(fcPhotoPoints).OIDFieldName
                             # reate a Where Clause to target ONLY this row
                             where = f"{oid_field} = {current_oid}"
                         else:
@@ -44,7 +44,7 @@ def Main(FieldName, FieldValue):
 
                         # Update FieldName field using the FieldValue value
                         arcpy.AddMessage(f"Setting {FieldName} to {FieldValue}...")
-                        with arcpy.da.UpdateCursor(fc,[FieldName], where_clause=where) as cursor:
+                        with arcpy.da.UpdateCursor(fcPhotoPoints, [FieldName], where_clause=where) as cursor:
                             for row in cursor:
                                 row[0] = FieldValue
                                 cursor.updateRow(row)
@@ -52,6 +52,11 @@ def Main(FieldName, FieldValue):
                         # Update FOV if necessary
                         if FieldName == "Heading" or "MetersOfView" or "Orientation":
                             fovUpdater.Main(CurrentPhoto=True)
+
+                        # Change Map Scale if necessary
+                        if FieldName == "ViewHeight":
+                            mf.camera.scale = FieldValue
+
         
         # Clear potential locks
         if 'cursor' in locals(): del cursor
@@ -60,8 +65,8 @@ def Main(FieldName, FieldValue):
         # Refresh Map Series to Reflect Changes
         if ms.enabled:
             # Force the UI to reset the Map Series
-            ms.enabled = False
-            ms.enabled = True # This effectively "reboots" the Map Series in the Catalog
+#            ms.enabled = False
+#            ms.enabled = True # This effectively "reboots" the Map Series in the Catalog
             ms.refresh()
 
     else:
