@@ -67,10 +67,10 @@ def export_and_open_photo_log(OpenPDF=True):
         map_series.exportToPDF(
             output_pdf_path, 
             "ALL",
-            image_compression = "ADAPTIVE",
-            image_quality = 3,               # Use 'BETTER' (1=BEST, 2=BETTER, 3=NORMAL, 4=WORSE, 5=WORST)
+            image_compression = "JPEG",
+            image_quality = 5,               # Use 'BETTER' (1=BEST, 2=BETTER, 3=NORMAL, 4=WORSE, 5=WORST)
             compress_vector_graphics = True,
-            resolution = 240
+            resolution = 150
         )
         # --- MODIFICATION END ---
 

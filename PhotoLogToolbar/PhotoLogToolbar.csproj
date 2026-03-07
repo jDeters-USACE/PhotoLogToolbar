@@ -122,6 +122,9 @@
     <None Update="PythonScripts\exif_tests.py">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="PythonScripts\exportFunctions.py">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="PythonScripts\exportWithMods.py">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -155,10 +158,34 @@
     <None Update="PythonScripts\PhotologToolbar.CreateNewPhotoLog.pyt.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="PythonScripts\PhotologToolbar.EditExistingPhotoLogParameters.pyt.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="PythonScripts\PhotologToolbar.EditField.pyt.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="PythonScripts\PhotologToolbar.exportPhotoLog.pyt.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="PythonScripts\PhotologToolbar.marker2distance.pyt.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="PythonScripts\PhotologToolbar.marker2heading.pyt.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="PythonScripts\PhotologToolbar.marker2location.pyt.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="PythonScripts\PhotologToolbar.pyt">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="PythonScripts\PhotologToolbar.pyt.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="PythonScripts\PhotologToolbar.recreateFOV.pyt.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="PythonScripts\PhotologToolbar.rotatePhoto.pyt.xml">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="PythonScripts\rotateImage.py">

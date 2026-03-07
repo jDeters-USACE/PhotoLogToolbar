@@ -1,7 +1,6 @@
 ﻿using ArcGIS.Core.Data;
-// The incorrect 'using ArcGIS.Core.Geoprocessing;' has been removed.
 using ArcGIS.Desktop.Core;
-using ArcGIS.Desktop.Core.Geoprocessing; // This is the correct one.
+using ArcGIS.Desktop.Core.Geoprocessing;
 using ArcGIS.Desktop.Framework;
 using ArcGIS.Desktop.Framework.Contracts;
 using ArcGIS.Desktop.Framework.Dialogs;
@@ -21,15 +20,11 @@ using System.Threading.Tasks;
 
 namespace PhotoLogToolbar
 {
-    /// <summary>
-    /// ComboBox4
-    /// </summary>
     internal class ComboBox4 : ComboBox
     {
         private bool _isUpdating = false;
 
         #region Constructor / lifecycle
-
         public ComboBox4()
         {
             _ = UpdateComboAsync();
@@ -46,7 +41,6 @@ namespace PhotoLogToolbar
             }
             catch { /* Swallow */ }
         }
-
         #endregion
 
         #region UI hooks and Helpers
@@ -77,21 +71,16 @@ namespace PhotoLogToolbar
                                        .OfType<FeatureLayer>()
                                        .FirstOrDefault(fl => fl.Name.Equals("Photo Location"));
 
-                if (featureLayer == null)
-                {
-                    Add(new ComboBoxItem("N/A", null, "Photo Location layer not found"));
-                    SelectedItem = ItemCollection.FirstOrDefault();
-                    Enabled = false;
-                    return;
-                }
-
                 var currentPageValue = await GetCurrentMapSeriesIndexValueAsync();
                 string? currentFeatureValue = null;
+                var uniqueValues = new HashSet<string>();
 
-                await QueuedTask.Run(() =>
+                var defaultValues = new[] { "250", "500", "750", "1000", "1500", "2000", "2500", "3000", "3500", "4000", "4500", "5000", "10000", "12500", "15000", "17500", "20000" };
+                foreach (var val in defaultValues) uniqueValues.Add(val);
+
+                if (featureLayer != null && !string.IsNullOrEmpty(currentPageValue))
                 {
-                    var uniqueValues = new HashSet<string>();
-                    if (!string.IsNullOrEmpty(currentPageValue))
+                    await QueuedTask.Run(() =>
                     {
                         var qf = new QueryFilter { WhereClause = $"{QuoteFieldForFileGdb("Number")} = {EscapeForSql(currentPageValue)}", SubFields = "ViewHeight" };
                         using (var cursor = featureLayer.Search(qf))
@@ -102,28 +91,18 @@ namespace PhotoLogToolbar
                                 if (!string.IsNullOrEmpty(currentFeatureValue)) uniqueValues.Add(currentFeatureValue);
                             }
                         }
-                    }
+                    });
+                }
 
-                    var defaultValues = new[] { "250", "500", "750", "1000", "1500", "2000", "2500", "3000", "3500", "4000", "4500", "5000", "10000", "12500", "15000", "17500", "20000" };
-                    foreach (var val in defaultValues) uniqueValues.Add(val);
-
-                    foreach (var item in uniqueValues.OrderBy(v => int.TryParse(v, out int n) ? n : int.MaxValue))
-                    {
-                        Add(new ComboBoxItem(item));
-                    }
-                });
+                foreach (var item in uniqueValues.OrderBy(v => int.TryParse(v, out int n) ? n : int.MaxValue))
+                {
+                    Add(new ComboBoxItem(item));
+                }
 
                 var itemToSelect = ItemCollection.OfType<ComboBoxItem>().FirstOrDefault(i => i.Text == currentFeatureValue);
-                if (itemToSelect?.Text == previouslySelectedItem?.Text)
-                {
-                    this.SelectedItem = previouslySelectedItem;
-                }
-                else
-                {
-                    this.SelectedItem = itemToSelect ?? ItemCollection.FirstOrDefault();
-                }
+                this.SelectedItem = itemToSelect ?? ItemCollection.FirstOrDefault();
 
-                Enabled = true;
+                Enabled = (featureLayer != null);
             }
             finally
             {
@@ -138,22 +117,15 @@ namespace PhotoLogToolbar
         #endregion
 
         #region Action Handling
-
         protected override async void OnSelectionChange(ComboBoxItem item)
         {
-            if (_isUpdating || item == null || string.IsNullOrWhiteSpace(item.Text))
-            {
-                return;
-            }
+            if (_isUpdating || item == null || string.IsNullOrWhiteSpace(item.Text)) return;
             await RunGeoprocessingTool(item.Text);
         }
 
         protected override async void OnEnter()
         {
-            if (_isUpdating || string.IsNullOrWhiteSpace(this.Text))
-            {
-                return;
-            }
+            if (_isUpdating || string.IsNullOrWhiteSpace(this.Text)) return;
             await RunGeoprocessingTool(this.Text);
         }
 
@@ -171,24 +143,25 @@ namespace PhotoLogToolbar
             }
 
             var args = Geoprocessing.MakeValueArray(fieldName, fieldValue);
+            bool toolSucceeded = false;
 
             await QueuedTask.Run(async () =>
             {
                 var result = await Geoprocessing.ExecuteToolAsync(toolName, args, null, CancellationToken.None, null, GPExecuteToolFlags.Default);
-
-                if (result.IsFailed)
-                {
-                    var sb = new StringBuilder();
-                    sb.AppendLine($"Geoprocessing tool failed: {toolName}");
-                    foreach (var message in result.Messages)
-                    {
-                        sb.AppendLine($"{message.Type}: {message.Text}");
-                    }
-                    MessageBox.Show(sb.ToString(), "Geoprocessing Error");
-                }
+                if (!result.IsFailed) toolSucceeded = true;
             });
 
-            await UpdateComboAsync();
+            if (toolSucceeded)
+            {
+                await QueuedTask.Run(() =>
+                {
+                    var mapSeries = LayoutView.Active?.Layout?.MapSeries;
+                    if (mapSeries == null) return;
+
+                    // CORRECTED: Re-setting the page to its current key forces the MapSeries to refresh.
+                    mapSeries.SetCurrentPageNumber(mapSeries.CurrentPageNumber);
+                });
+            }
         }
         #endregion
     }
