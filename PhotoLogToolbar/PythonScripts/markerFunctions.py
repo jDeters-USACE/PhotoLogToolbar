@@ -7,6 +7,8 @@ import JLog
 importlib.reload(JLog)
 import fovUpdater
 importlib.reload(fovUpdater)
+import backupFunctions
+importlib.reload(backupFunctions)
 
 
 def calculate_initial_compass_bearing(pointA, pointB):
@@ -44,7 +46,11 @@ def calculate_initial_compass_bearing(pointA, pointB):
 
 
 def marker2location(CurrentPhoto=True):
-    L = JLog.PrintLog(Log="C:\\Temp\\PhotoLogToolbar_LOG.txt", Indent=2)
+    CurrentPhoto=True
+    # Backup current PhotoPoints feature class (Once per day)
+    backupFunctions.create_photopoints_backup()
+    # Create Instance of JLog
+    L = JLog.PrintLog(Log="C:\\Temp\\PhotoLogToolbar_LOG.txt", Indent=3)
     # Reference the project currently open in ArcGIS Pro
     aprx = arcpy.mp.ArcGISProject("CURRENT")
     # Get the active view
@@ -127,6 +133,8 @@ def marker2location(CurrentPhoto=True):
 
 def marker2heading(CurrentPhoto=True):
     CurrentPhoto=True # Always, for this one
+    # Backup current PhotoPoints feature class (Once per day)
+    backupFunctions.create_photopoints_backup()
     L = JLog.PrintLog(Log="C:\\Temp\\PhotoLogToolbar_LOG.txt", Indent=2)
     # Reference the project currently open in ArcGIS Pro
     aprx = arcpy.mp.ArcGISProject("CURRENT")

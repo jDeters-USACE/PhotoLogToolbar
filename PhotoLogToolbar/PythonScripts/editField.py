@@ -6,8 +6,13 @@ import JLog
 importlib.reload(JLog)
 import fovUpdater
 importlib.reload(fovUpdater)
+import backupFunctions
+importlib.reload(backupFunctions)
 
 def Main(FieldName, FieldValue):
+    # Backup if Heading is changed
+    if FieldName == "Heading":
+        backupFunctions.create_photopoints_backup()
     # Set CurrentPhoto to True
     CurrentPhoto = True
     # Reference the project currently open in ArcGIS Pro

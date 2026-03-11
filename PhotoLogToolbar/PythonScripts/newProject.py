@@ -246,7 +246,7 @@ def createPhotoPoints(GDB, PhotoFolder, ProjectName, USACE_ID, Photographer, Raw
     edit.stopEditing(True) # True saves changes
     # Calculate AspectRation
     AspectRatio = ET.AspectRatio()
-    Taken_Date = str(ET.Date())[:10]
+#    taken_date = str(ET.Date())[:10]
     # Terminate ExifParser class
     L.Wrap('Terminating PyExifToolWrapper class...')
 #    ET.Terminate()
@@ -319,7 +319,7 @@ def createPhotoPoints(GDB, PhotoFolder, ProjectName, USACE_ID, Photographer, Raw
     del Start
     L.Wrap('----End of createPhotoPoints()----')
     del L, images, Num, check
-    return AspectRatio, Taken_Date
+    return AspectRatio
 
 
 
@@ -341,17 +341,62 @@ def Main(PhotoFolder,
     L.Wrap(' ')
     L.Wrap('---Start of NewProjectFromPoints()---')
     # Local Variables
-    TempFolder = r'C:\Temp\Mapped_PhotoLog'
-    ProjectFolder = OutputFolder + '\\Mapped Photo Log'
-    # Check if ProjectFolder already exists, and augment if it does
+    # Reference the project currently open in ArcGIS Pro for name checking
+    aprx = arcpy.mp.ArcGISProject("CURRENT")
+    
+    # Get a taken_date for naming checks before the main processing
+    images = filter(lambda x: x.lower().endswith(('.jpg', '.jpeg', '.png', '.tif')), os.listdir(PhotoFolder))
+    photo_paths = []
+    # Remove images that a the result of previous 'Rotate 90 Degrees' operations
+    exclude_list = ['(R090)', '(R180)', '(R270)']
+    for name in images:
+        excluded = False
+        for exclude_string in exclude_list:
+            if exclude_string in name:
+                excluded = True
+        if excluded is False:
+            photo_paths.append(PhotoFolder + '\\' + name)
+    # Get first image
+    first_image_path = photo_paths[0]
+    taken_date = "YYYY-MM-DD" # Default date
+    if first_image_path:
+        try:
+            ET_check = ExifParser.Wrapper()
+            ET_check.GetMetadata(first_image_path)
+            taken_date = str(ET_check.Date())[:10]
+        except Exception as e:
+            L.Wrap(f"Could not pre-fetch date for naming, using default. Error: {e}")
+    L.Wrap(f"Photograph 'Taken Date' = {taken_date}")
+    
+
+    # 1. New centralized logic to find a unique suffix for all assets
+    L.Wrap('Finding a unique name suffix for folder, layout, and maps...')
     augment = 1
-    while os.path.exists(ProjectFolder):
-        ProjectFolder = f'{OutputFolder}\\Mapped Photo Log{augment}'
+    name_suffix = ""
+    while True:
+        # Proposed names
+        prospective_folder = f'{OutputFolder}\\Mapped Photo Log{name_suffix}'
+        prospective_layout_name = f"{taken_date} - Mapped Photo Log{name_suffix}"
+        prospective_main_map_name = f"{taken_date} - Photo Log - Main{name_suffix}"
+        prospective_overview_map_name = f"{taken_date} - Photo Log - Overview{name_suffix}"
+
+        # Check if any of the prospective names already exist
+        folder_exists = os.path.exists(prospective_folder)
+        layout_exists = aprx.listLayouts(prospective_layout_name)
+        main_map_exists = aprx.listMaps(prospective_main_map_name)
+        overview_map_exists = aprx.listMaps(prospective_overview_map_name)
+
+        if not folder_exists and not layout_exists and not main_map_exists and not overview_map_exists:
+            L.Wrap(f"Suffix '{name_suffix}' is available. Locking it in.")
+            break  # Found a unique suffix, exit the loop
+
+        # If names are taken, increment and try again
+        L.Wrap(f"Suffix '{name_suffix}' is in use. Trying next number.")
+        name_suffix = f" {augment}" # Adds a space as requested
         augment += 1
-    # If there was no augmentation
-    if augment < 2:
-        # Make the augment nothing, so we can use this for the map names for the catalog.
-        augment = ""
+
+    # 2. Define final names using the determined unique suffix
+    ProjectFolder = f'{OutputFolder}\\Mapped Photo Log{name_suffix}'
     GDB = ProjectFolder + '\\GIS_Data.gdb'
     PhotoPoints = GDB + '\\PhotoPoints'
     fovPath = GDB + '\\FOV'
@@ -446,14 +491,13 @@ def Main(PhotoFolder,
     
     # UPDATE ALL PhotoPoints FIELDS (Also provides the Aspect Ratio for choosing the Layout Template)
     L.Wrap('executing updatePhotoPoints()...')
-    AspectRatio, Taken_Date = createPhotoPoints(GDB,
-                                                PhotoFolder,
-                                                ProjectName,
-                                                USACE_ID,
-                                                Photographer,
-                                                TerraSync_Photographs)
+    AspectRatio = createPhotoPoints(GDB,
+                                    PhotoFolder,
+                                    ProjectName,
+                                    USACE_ID,
+                                    Photographer,
+                                    TerraSync_Photographs)
     L.Wrap('AspectRatio = ' + str(AspectRatio))
-    L.Wrap(f'Date_Taken = {Taken_Date}')
     
     # Select the 4x3 Layout File by default to catch alternate aspect ratios
     template_pagx = template_folder + r'\Mapped Photo Log (4x3).pagx' 
@@ -464,27 +508,25 @@ def Main(PhotoFolder,
         L.Wrap('Choosing the 3x2 Photo Layout MXD...')
         template_pagx = template_folder + r'\Mapped Photo Log (3x2).pagx'
     
-    # Reference the project currently open in ArcGIS Pro
-    aprx = arcpy.mp.ArcGISProject("CURRENT")
     # Import Layout File
     aprx.importDocument(template_pagx)
 
     # Rename the Layout (Reference the most recently added layout)
     new_lyt = aprx.listLayouts()[-1] 
-    new_lyt.name = f"{Taken_Date} - Mapped Photo Log{augment}"
+    new_lyt.name = f"{taken_date} - Mapped Photo Log{name_suffix}"
 
     # Rename and Update Data Sources
     for mf in new_lyt.listElements("MAPFRAME_ELEMENT"):
         if "Photo Log - Main" in mf.map.name:
             # Rename Map to avoid confusing clutter
-            mf.map.name = f"{Taken_Date} - Photo Log - Main{augment}"
+            mf.map.name = f"{taken_date} - Photo Log - Main{name_suffix}"
             # Get Current "old" GDB path
             lyr = mf.map.listLayers()[0]
             old_gdb = arcpy.Describe(lyr.dataSource).path
             # Update GDB Source
             mf.map.updateConnectionProperties(old_gdb, GDB)
         elif "Photo Log - Overview" in mf.map.name:
-            mf.map.name = f"{Taken_Date} - Photo Log - Overview{augment}"
+            mf.map.name = f"{taken_date} - Photo Log - Overview{name_suffix}"
             # Get Current "old" GDB path
             lyr = mf.map.listLayers()[0]
             old_gdb = arcpy.Describe(lyr.dataSource).path
@@ -513,7 +555,7 @@ def Main(PhotoFolder,
 #        E = exportWithMods.ExportWithSub(MXD=finalMXD)
 #        E()
     L.Time(Start,'NewProjectFromPoints()')
-    del Start, TempFolder, ProjectFolder, GDB, PhotoPoints
+    del Start, ProjectFolder, GDB, PhotoPoints
     L.Wrap('----End of NewProjectFromPoints()----')
     del L
 
