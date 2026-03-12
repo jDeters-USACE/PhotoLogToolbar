@@ -108,7 +108,7 @@
         <comboBox id="PhotoLogToolbar_ComboBox3" caption="Heading (Degrees)" className="ComboBox3" itemWidth="45" extendedCaption="Extended Caption" isEditable="true" isReadOnly="false" resizable="true">
           <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
         </comboBox>
-        <comboBox id="PhotoLogToolbar_ComboBox4" caption="Map Scale (1:X)" className="ComboBox4" itemWidth="70" extendedCaption="Extended Caption" isEditable="true" isReadOnly="false" resizable="true">
+        <comboBox id="PhotoLogToolbar_ComboBox4" caption="Map Scale ( 1 : X )" className="ComboBox4" itemWidth="70" extendedCaption="Extended Caption" isEditable="true" isReadOnly="false" resizable="true">
           <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
         </comboBox>
         <comboBox id="PhotoLogToolbar_ComboBox5" caption="View Distance (m)" className="ComboBox5" itemWidth="50" extendedCaption="Extended Caption" isEditable="true" isReadOnly="false" resizable="true">

@@ -1,6 +1,7 @@
 import math
 import arcpy
 import importlib
+import datetime
 
 # Import Custom Libraries
 import JLog
@@ -45,7 +46,7 @@ def calculate_initial_compass_bearing(pointA, pointB):
     return compass_bearing
 
 
-def marker2location(CurrentPhoto=True):
+def marker2location(EditorName=None, CurrentPhoto=True):
     CurrentPhoto=True
     # Backup current PhotoPoints feature class (Once per day)
     backupFunctions.create_photopoints_backup()
@@ -101,10 +102,32 @@ def marker2location(CurrentPhoto=True):
 
                                 # Update FieldName field using the FieldValue value
                                 L.Wrap(f"Setting Photo Location to {mpLat}, {mpLon}...")
+                                fields = ['SHAPE@X', 'SHAPE@Y', 'LocationSource', 'Asterisk', 'HeadingSource', 'Asterisk2']
                                 with arcpy.da.UpdateCursor(fcPhotoPoints, fields, where_clause=where) as update_cursor:
                                     for row in update_cursor:
+                                        OldLocationSource = row[2]
+                                        OldHeadingSource = row[4]
+                                        OldAstrisk2 = row[5]
+                                        # Get Today's Date as a string
+                                        Today = datetime.date.today()
+                                        m = str(Today.month)
+                                        d = str(Today.day)
+                                        y = str(Today.year)
+                                        Date = m+'/'+d+'/'+y  
+                                        # Update Lat and Lon
                                         row[0] = mpLon
                                         row[1] = mpLat
+                                        # Set Location Source and Asterisk
+                                        if OldLocationSource is None or OldLocationSource == '' or 'imagery' in OldLocationSource:
+                                            row[2] = 'Determined using satellite imagery*'
+                                            row[3] = '* Set by ' + EditorName + ' on ' + Date
+                                        else:
+                                            row[2] = OldLocationSource.strip('*') + '*'
+                                            row[3] = '* Corrected by ' + EditorName + ' on ' + Date
+                                        # If necessary, Augment HeadingSource and Asterisk2
+                                        if row[5] != None:
+                                            row[4] = OldHeadingSource.strip('*') + '**'
+                                            row[5] = '**' + OldAstrisk2.strip('*')
                                         update_cursor.updateRow(row)
 
                                 # Rebuild Field of View Polygon for new location
@@ -131,7 +154,7 @@ def marker2location(CurrentPhoto=True):
 
 
 
-def marker2heading(CurrentPhoto=True):
+def marker2heading(EditorName=None, CurrentPhoto=True):
     CurrentPhoto=True # Always, for this one
     # Backup current PhotoPoints feature class (Once per day)
     backupFunctions.create_photopoints_backup()
@@ -196,10 +219,33 @@ def marker2heading(CurrentPhoto=True):
                                 compass_bearing = calculate_initial_compass_bearing(pointA, pointB)
 
                                 # Write Compass Bearing as the Heading for the current Photo
-                                fields = ['Heading']
+                                fields = ['Heading', 'Asterisk', 'HeadingSource', 'Asterisk2']
                                 with arcpy.da.UpdateCursor(fcPhotoPoints, fields, where_clause=where) as update_cursor:
                                     for row in update_cursor:
+                                        # Get existing values
+                                        OldAsterisk = row[1]
+                                        OldHeadingSource = row[2]
+                                        OldAsterisk2 = row[3]
+                                        # Get Today's Date as a string
+                                        Today = datetime.date.today()
+                                        m = str(Today.month)
+                                        d = str(Today.day)
+                                        y = str(Today.year)
+                                        Date = m+'/'+d+'/'+y   
+                                        # Set Heading to Compass Bearing
                                         row[0] = compass_bearing
+                                        # Calculate Asterisk Count
+                                        if OldAsterisk == None:
+                                            Asterisks = '*'
+                                        else:
+                                            Asterisks = '**'
+                                        # Update Heading Source and Asterisk2
+                                        if OldHeadingSource is None or OldHeadingSource == '' or 'imagery' in OldHeadingSource:
+                                            row[2] = 'Determined using satellite imagery' + Asterisks
+                                            row[3] = Asterisks + ' Set by ' + EditorName + ' on ' + Date
+                                        else:
+                                            row[2] = OldHeadingSource.strip('*') + Asterisks
+                                            row[3] = Asterisks + ' Corrected by ' + EditorName + ' on ' + Date
                                         update_cursor.updateRow(row)
 
                                 # Rebuild Field of View Polygon for new location

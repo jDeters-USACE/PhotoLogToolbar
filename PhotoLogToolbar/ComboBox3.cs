@@ -13,17 +13,15 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Text;
-using System.Text.RegularExpressions; // Required for Regex
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.VisualBasic;
 
 #nullable enable
 
 namespace PhotoLogToolbar
 {
-    /// <summary>
-    /// ComboBox3 - Refactored with user-friendly headings and clean numeric display.
-    /// </summary>
     internal class ComboBox3 : ComboBox
     {
         private bool _isUpdating = false;
@@ -33,15 +31,15 @@ namespace PhotoLogToolbar
             { "S", "180" }, { "SW", "225" }, { "W", "270" }, { "NW", "315" }
         };
 
-        #region Constructor / lifecycle
+        // --- The local static variable has been REMOVED ---
 
+        #region Constructor, Helpers, etc.
         public ComboBox3()
         {
             _ = UpdateComboAsync();
             MapSeriesWatcher.Instance.Subscribe(OnMapSeriesPageChanged);
             MapLayoutWatcher.Instance.Subscribe(OnLayoutChanged);
         }
-
         ~ComboBox3()
         {
             try
@@ -49,154 +47,95 @@ namespace PhotoLogToolbar
                 MapSeriesWatcher.Instance.Unsubscribe(OnMapSeriesPageChanged);
                 MapLayoutWatcher.Instance.Unsubscribe(OnLayoutChanged);
             }
-            catch { /* Swallow */ }
+            catch { }
         }
-
-        #endregion
-
-        #region UI hooks and Helpers
         protected override void OnDropDownOpened() { }
         private static string EscapeForSql(string value) => value?.Replace("'", "''") ?? string.Empty;
         private static string QuoteFieldForFileGdb(string fieldName) => $"\"{fieldName}\"";
         #endregion
 
-        #region MapSeries index value resolution
+        #region Core UI Logic
         private async Task<string?> GetCurrentMapSeriesIndexValueAsync()
         {
             return await QueuedTask.Run(() => LayoutView.Active?.Layout?.MapSeries?.CurrentPageNumber);
         }
-        #endregion
-
-        #region Core refresh logic
         private async Task UpdateComboAsync()
         {
             if (_isUpdating) return;
             _isUpdating = true;
-
             try
             {
                 Clear();
-
-                var featureLayer = MapView.Active?.Map?.GetLayersAsFlattenedList()
-                                       .OfType<FeatureLayer>()
-                                       .FirstOrDefault(fl => fl.Name.Equals("Photo Location"));
-
-                if (featureLayer == null)
-                {
-                    Add(new ComboBoxItem("N/A", null, "Photo Location layer not found"));
-                    Text = "N/A";
-                    Enabled = false;
-                    return;
-                }
-
+                var featureLayer = MapView.Active?.Map?.GetLayersAsFlattenedList().OfType<FeatureLayer>().FirstOrDefault(fl => fl.Name.Equals("Photo Location"));
+                if (featureLayer == null) { Text = "N/A"; Enabled = false; return; }
                 var currentPageValue = await GetCurrentMapSeriesIndexValueAsync();
                 string? currentFeatureValue = null;
-
                 await QueuedTask.Run(() =>
                 {
                     if (!string.IsNullOrEmpty(currentPageValue))
                     {
                         var qf = new QueryFilter { WhereClause = $"{QuoteFieldForFileGdb("Number")} = {EscapeForSql(currentPageValue)}", SubFields = "Heading" };
-                        using (var cursor = featureLayer.Search(qf))
-                        {
-                            if (cursor.MoveNext())
-                            {
-                                currentFeatureValue = cursor.Current["Heading"]?.ToString();
-                            }
-                        }
+                        using (var cursor = featureLayer.Search(qf)) { if (cursor.MoveNext()) { currentFeatureValue = cursor.Current["Heading"]?.ToString(); } }
                     }
                 });
-
-                // Populate the dropdown with user-friendly annotated headings.
-                foreach (var heading in _standardHeadings)
-                {
-                    Add(new ComboBoxItem($"{heading.Key} - {heading.Value}"));
-                }
-
-                // ✅ CHANGED: Always display the raw numeric value in the text box.
+                foreach (var heading in _standardHeadings) { Add(new ComboBoxItem($"{heading.Key} - {heading.Value}")); }
                 this.Text = currentFeatureValue ?? "";
-
                 Enabled = true;
             }
-            finally
-            {
-                _isUpdating = false;
-            }
+            finally { _isUpdating = false; }
         }
         #endregion
 
-        #region Watcher Handlers
+        #region Watchers & Action Handling
         private void OnMapSeriesPageChanged(object? sender, string? newPageNumber) => _ = UpdateComboAsync();
         private void OnLayoutChanged(object? sender, MapLayoutWatcher.LayoutChangedEventArgs e) => _ = UpdateComboAsync();
-        #endregion
 
-        #region Action Handling
-
-        protected override async void OnSelectionChange(ComboBoxItem item)
-        {
-            if (_isUpdating || item == null || string.IsNullOrWhiteSpace(item.Text))
-            {
-                return;
-            }
-            await ProcessAndRunTool(item.Text);
-        }
+        protected override void OnSelectionChange(ComboBoxItem item) { return; }
 
         protected override async void OnEnter()
         {
-            if (_isUpdating || string.IsNullOrWhiteSpace(this.Text))
-            {
-                return;
-            }
+            if (_isUpdating || string.IsNullOrWhiteSpace(this.Text)) { return; }
             await ProcessAndRunTool(this.Text);
         }
 
         private async Task ProcessAndRunTool(string rawText)
         {
-            string numericValue = rawText;
-
-            // This logic correctly extracts the number from either a friendly name ("S - 180")
-            // or a plain number ("180").
-            var match = Regex.Match(rawText, @"- (\d+)");
-            if (match.Success)
+            // ✅ CHANGED: Now checks the central session manager for the author name.
+            if (string.IsNullOrWhiteSpace(PhotoLogSessionManager.SessionAuthorName))
             {
-                numericValue = match.Groups[1].Value;
+                string author = Interaction.InputBox("Please enter your name to attribute changes for this session.", "Attribute Session Author", "");
+                if (string.IsNullOrWhiteSpace(author)) { await UpdateComboAsync(); return; }
+                // Store the name in the central session manager.
+                PhotoLogSessionManager.SessionAuthorName = author;
             }
 
-            await RunGeoprocessingTool(numericValue);
+            string numericValue = rawText;
+            var match = Regex.Match(rawText, @"- (\d+)");
+            if (match.Success) { numericValue = match.Groups[1].Value; }
+
+            // The tool is always called with the shared session author name.
+            await RunGeoprocessingTool(numericValue, PhotoLogSessionManager.SessionAuthorName);
         }
 
-        private async Task RunGeoprocessingTool(string fieldValue)
+        private async Task RunGeoprocessingTool(string fieldValue, string authorName)
         {
             string fieldName = "Heading";
             string assemblyDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             string toolBoxPath = Path.Combine(assemblyDir, "PythonScripts", "PhotologToolbar.pyt");
             string toolName = $"{toolBoxPath}\\EditField";
-
-            if (!File.Exists(toolBoxPath))
-            {
-                MessageBox.Show($"Toolbox not found at: {toolBoxPath}");
-                return;
-            }
-
-            var args = Geoprocessing.MakeValueArray(fieldName, fieldValue);
-
+            if (!File.Exists(toolBoxPath)) { MessageBox.Show($"Toolbox not found at: {toolBoxPath}"); return; }
+            var args = Geoprocessing.MakeValueArray(fieldName, fieldValue, authorName);
             await QueuedTask.Run(async () =>
             {
                 var result = await Geoprocessing.ExecuteToolAsync(toolName, args, null, CancellationToken.None, null, GPExecuteToolFlags.Default);
-
                 if (result.IsFailed)
                 {
                     var sb = new StringBuilder();
                     sb.AppendLine($"Geoprocessing tool failed: {toolName}");
-                    foreach (var message in result.Messages)
-                    {
-                        sb.AppendLine($"{message.Type}: {message.Text}");
-                    }
-                    MessageBox.Show(sb.ToString(), "Geoprocessing Error");
+                    foreach (var message in result.Messages) { sb.AppendLine($"{message.Type}: {message.Text}"); }
+                    MessageBox.Show(sb.ToString(), "-------------------------------------Geoprocessing Error-------------------------------------");
                 }
             });
-
-            // The refresh call will now correctly set the text to the new numeric value.
             await UpdateComboAsync();
         }
         #endregion

@@ -104,6 +104,14 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Update="PhotoLogSessionManager.cs">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="PythonScripts\backupFunctions.py">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="PythonScripts\backup_images.py">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

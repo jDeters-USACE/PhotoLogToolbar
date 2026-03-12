@@ -1,5 +1,6 @@
 import arcpy
 import importlib
+import datetime
 
 # Import Custom Libraries
 import JLog
@@ -9,7 +10,7 @@ importlib.reload(fovUpdater)
 import backupFunctions
 importlib.reload(backupFunctions)
 
-def Main(FieldName, FieldValue):
+def Main(FieldName, FieldValue, EditorName=None):
     # Backup if Heading is changed
     if FieldName == "Heading":
         backupFunctions.create_photopoints_backup()
@@ -46,12 +47,43 @@ def Main(FieldName, FieldValue):
                             where = f"{oid_field} = {current_oid}"
                         else:
                             where = None
+                        
+                        # Handle fields that require Author input
+                        if FieldName == 'Heading':
+                            fields = ['Heading',
+                                      'Asterisk',
+                                      'HeadingSource',
+                                      'Asterisk2']
+                        else:
+                            fields = [FieldName]
 
                         # Update FieldName field using the FieldValue value
                         arcpy.AddMessage(f"Setting {FieldName} to {FieldValue}...")
-                        with arcpy.da.UpdateCursor(fcPhotoPoints, [FieldName], where_clause=where) as cursor:
+                        with arcpy.da.UpdateCursor(fcPhotoPoints, fields, where_clause=where) as cursor:
                             for row in cursor:
                                 row[0] = FieldValue
+                                if FieldName == 'Heading':
+                                    # Get Number of Asterisks
+                                    if row[1] == None:
+                                        Asterisks = '*'
+                                    else:
+                                        Asterisks = '**'
+                                    OldHeadingSource = row[1]
+                                    # Get Date
+                                    Today = datetime.date.today()
+                                    m = str(Today.month)
+                                    d = str(Today.day)
+                                    y = str(Today.year)
+                                    Date = m+'/'+d+'/'+y
+                                    # Ensure EditorName is a string before using it.
+                                    author_str = EditorName if EditorName is not None else "N/A"
+                                    # Set Heading Source and Edited By Name On field
+                                    if OldHeadingSource is None or OldHeadingSource == '' or 'imagery' in OldHeadingSource:
+                                        row[2] = 'Determined using satellite imagery' + Asterisks
+                                        row[3] = Asterisks + ' Set by ' + author_str + ' on ' + Date
+                                    else:
+                                        row[2] = row[2].strip('*') + Asterisks
+                                        row[3] = Asterisks + ' Corrected by ' + author_str + ' on ' + Date
                                 cursor.updateRow(row)
 
                         # Update FOV if necessary

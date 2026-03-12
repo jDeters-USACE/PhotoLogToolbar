@@ -525,6 +525,11 @@ def Main(PhotoFolder,
             old_gdb = arcpy.Describe(lyr.dataSource).path
             # Update GDB Source
             mf.map.updateConnectionProperties(old_gdb, GDB)
+            # Ensure All Layers are enabled
+            for lyr in mf.map.listLayers():
+                if not lyr.visible:
+                    lyr.visible = True
+                    L.Wrap(f"- Layer '{lyr.name}' in map '{mf.map.name}' has been turned ON.")
         elif "Photo Log - Overview" in mf.map.name:
             mf.map.name = f"{taken_date} - Photo Log - Overview{name_suffix}"
             # Get Current "old" GDB path
@@ -560,13 +565,6 @@ def Main(PhotoFolder,
     del L
 
 if __name__ == '__main__':
-#    Main(PhotoFolder=r'R:\ORM\2009\200901482 - CAHST, Fresno to Bakersfield\Photos 200901482\Allensworth Impact Sites 3-27 to 3-28-17\Photos 3-27 to 3-28-17',
-#         OutputFolder=r'R:\ORM\2009\200901482 - CAHST, Fresno to Bakersfield\Photos 200901482\Allensworth Impact Sites 3-27 to 3-28-17',
-#         ProjectName='California High-Speed Rail, Fresno to Bakersfield Section',
-#         USACE_ID='SPK-2009-01482',
-#         Photographer='Zachary Simmons',
-#         RawPhotoPoints=None)
-    
     Main(PhotoFolder=r'C:\Users\L2RCSJ9D\OneDrive - US Army Corps of Engineers\Documents\ArcGIS\Projects\PhotoLogToolbar\Test Projects\201500644 - Stewart Water Diversion\2016-06-14 - Site Visit\test\test\Photographs',
          OutputFolder=r'C:\Users\L2RCSJ9D\OneDrive - US Army Corps of Engineers\Documents\ArcGIS\Projects\PhotoLogToolbar\Test Projects\201500644 - Stewart Water Diversion\2016-06-14 - Site Visit\test\test',
          ProjectName='Wildlands Mitigation Bank',

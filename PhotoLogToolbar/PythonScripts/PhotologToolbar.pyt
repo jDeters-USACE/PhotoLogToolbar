@@ -233,8 +233,17 @@ class EditField:
         param_2.direction = 'Input'
         param_2.datatype = u'String'
 
+        # Field Editor
+        param_3 = arcpy.Parameter()
+        param_3.name = u'Editor'
+        param_3.displayName = u'Name of the person making this change'
+        param_3.parameterType = 'Optional'
+        param_3.direction = 'Input'
+        param_3.datatype = u'String'
+        param_3.value = u''
 
-        params = [param_1, param_2]
+
+        params = [param_1, param_2, param_3]
         return params
 
     def isLicensed(self):
@@ -271,12 +280,12 @@ class EditField:
         importlib.reload(fovUpdater)
 
         # Get Parameters
-        FieldName = str(parameters[0].value)
-        FieldValue = str(parameters[1].value)
+        FieldName = parameters[0].valueAsText
+        FieldValue = parameters[1].valueAsText
+        EditorName = parameters[2].valueAsText
 
         # Execute function
-        editField.Main(FieldName, FieldValue)
-        arcpy.AddMessage(f'FieldName = {FieldName}')
+        editField.Main(FieldName, FieldValue, EditorName)
         if FieldName == "Heading" or "Orientation" or "MetersOfView":
             arcpy.AddMessage('Reloading FOV')
             fovUpdater.Main(CurrentPhoto=True)
@@ -377,7 +386,16 @@ class marker2location:
         param_1.datatype = u'Boolean'
         param_1.value = u'true'
 
-        params = [param_1]
+        # Field Editor
+        param_2 = arcpy.Parameter()
+        param_2.name = u'Editor'
+        param_2.displayName = u'Name of the person making this change'
+        param_2.parameterType = 'Required'
+        param_2.direction = 'Input'
+        param_2.datatype = u'String'
+        param_2.value = u''
+
+        params = [param_1, param_2]
         return params
 
     def isLicensed(self):
@@ -412,6 +430,7 @@ class marker2location:
         importlib.reload(markerFunctions)
 
         # Get Parameters
+        EditorName = parameters[1].valueAsText
         restrict_to_current_photo = str(parameters[0].value)
         if restrict_to_current_photo == u'false':
             restrict_setting = False
@@ -419,7 +438,7 @@ class marker2location:
             restrict_setting = True
 
         # Execute function
-        markerFunctions.marker2location(CurrentPhoto=restrict_setting)
+        markerFunctions.marker2location(CurrentPhoto=restrict_setting, EditorName=EditorName)
         return
 
     def postExecute(self, parameters):
@@ -447,7 +466,16 @@ class marker2heading:
         param_1.datatype = u'Boolean'
         param_1.value = u'true'
 
-        params = [param_1]
+        # Field Editor
+        param_2 = arcpy.Parameter()
+        param_2.name = u'Editor'
+        param_2.displayName = u'Name of the person making this change'
+        param_2.parameterType = 'Required'
+        param_2.direction = 'Input'
+        param_2.datatype = u'String'
+        param_2.value = u''
+
+        params = [param_1, param_2]
         return params
 
     def isLicensed(self):
@@ -482,6 +510,7 @@ class marker2heading:
         importlib.reload(markerFunctions)
 
         # Get Parameters
+        EditorName = parameters[1].valueAsText
         restrict_to_current_photo = str(parameters[0].value)
         if restrict_to_current_photo == u'false':
             restrict_setting = False
@@ -489,7 +518,7 @@ class marker2heading:
             restrict_setting = True
 
         # Execute function
-        markerFunctions.marker2heading(CurrentPhoto=restrict_setting)
+        markerFunctions.marker2heading(CurrentPhoto=restrict_setting, EditorName=EditorName)
         return
 
     def postExecute(self, parameters):
