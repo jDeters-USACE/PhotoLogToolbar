@@ -25,6 +25,7 @@
 # Import Standard Libraries
 import os
 import sys
+import importlib
 import time
 import math
 import shutil
@@ -228,64 +229,31 @@ class Wrapper(object):
             self.L.Wrap('WARNING: Orientation could not be determined. Defaulting to "{}"'.format(Orientation))
             return Orientation
 
-#    def GetTimeZone(self):
-#        try:
-#            # Get photo created date timezone offset tag
-#            createdOffset = f"{self.PhotoData['FileCreateDate'][-5:][:3]}:{self.PhotoData['FileCreateDate'][-5:][3:]}"
-#            # Compare to other timezones
-#            zones = timeZones.tzList()
-#            for tz in zones:
-#                # create datetime in the given timezone to test if photo's offset matches offset on the photo date (to account for DST)
-#                tzt = datetime.datetime.strptime(self.PhotoData['FileCreateDate'][:-6], '%Y-%m-%d %H:%M:%S.%f').replace(tzinfo=tz)
-#                # truncate only the offset tag
-#                tztOffset = str(tzt)[-6:]
-#                # compare file offset and current tz offset
-#                if createdOffset == tztOffset:
-#                    # tz matches file created date, returning timezone
-#                    tz_name = tzt.tzname()
-#                    self.L.Wrap('Timezone = ' + str(tz_name))
-#                    return tz, tz_name
-#        except Exception:
-#            self.L.Wrap('No FileCreateDate found for this photo')
-#            return None
-
     def GetTimeZone(self):
         try:
-            # 1. Clean and normalize the input string
-            # EXIF offsets like -0800 need to be handled carefully
-            raw_date = self.PhotoData['FileCreateDate']
-            
-            # 2. Flexible parsing using dateutil (handles .%f and %z automatically)
-            # Supports: '2025-12-04 16:01:34-0800' AND '2025-12-04 16:01:34.500-08:00'
-            tzt = parser.parse(raw_date)
-            
-            # 3. Extract the offset string to match your logic (e.g., "-08:00")
-            # .strftime('%z') returns '-0800'; we ensure it has the colon for your match
-            offset = tzt.strftime('%z')
-            createdOffset = f"{offset[:3]}:{offset[3:]}"
-            
-            # 4. Compare against your tzList
+            # Get photo created date timezone offset tag
+            createdOffset = f"{self.PhotoData['FileCreateDate'][-5:][:3]}:{self.PhotoData['FileCreateDate'][-5:][3:]}"
+            # Compare to other timezones
             zones = timeZones.tzList()
             for tz in zones:
-                # Check if this timezone's offset at this specific time matches the photo
-                # This accounts for Daylight Saving Time automatically
-                test_dt = tzt.astimezone(tz)
-                test_offset = test_dt.strftime('%z')
-                tztOffset = f"{test_offset[:3]}:{test_offset[3:]}"
-
+                # create datetime in the given timezone to test if photo's offset matches offset on the photo date (to account for DST)
+                try:
+                    # This is the way to do it, but for a certain number of cases, DateTimeOriginal doens't exist
+                    tzt = datetime.datetime.strptime(self.PhotoData['DateTimeOriginal'], '%Y:%m:%d %H:%M:%S').replace(tzinfo=tz)
+                except:
+                    # This could be accurate, but it gets changed when files are copied sometimes.
+                    tzt = datetime.datetime.strptime(self.PhotoData['FileCreateDate'][:-6], '%Y-%m-%d %H:%M:%S.%f').replace(tzinfo=tz)
+                # truncate only the offset tag
+                tztOffset = str(tzt)[-6:]
+                # compare file offset and current tz offset
                 if createdOffset == tztOffset:
-                    tz_name = test_dt.tzname()
-                    self.L.Wrap(f'Timezone Match Found: {tz_name}')
-                    
-                    # IMPORTANT: Return the NAIVE datetime for the InsertCursor
-                    # ArcGIS Pro GDBs typically fail with 'aware' datetimes
-                    naive_dt = tzt.replace(tzinfo=None)
-                    
+                    # tz matches file created date, returning timezone
+                    tz_name = tzt.tzname()
+                    self.L.Wrap('Timezone = ' + str(tz_name))
                     return tz, tz_name
-                    
-        except Exception as e:
-            self.L.Wrap(f'Error parsing date/timezone: {str(e)}')
-            return None, None, None
+        except Exception:
+            self.L.Wrap('No FileCreateDate found for this photo')
+            return None, None
 
     def GetGPSDateTime(self):
         """
@@ -495,36 +463,21 @@ class Wrapper(object):
 # End of PyExifToolWrapper Class
 
 if __name__ == '__main__':
-    Photos = []
-##    Photo = r'R:\ORM\2016\201600560 - Meadowood Way Potential Violation\Images from Matt Lucchesi (Requested to be Anonymous)\Images 8-23\Photographs\20160822_113612.jpg'
-##    Photos.append(Photo)
-##    Photo = r'R:\Personal Folders\Deters\Programming\MyPythonPackages\Mapped_Photo_Log\Test Projects\200702227 - Hardesty\2012-06-05 - Site Visit\Photographs\DSC00679.JPG'
-##    Photos.append(Photo)
-##    Photo = r'R:\Personal Folders\Deters\Programming\MyPythonPackages\Mapped_Photo_Log\Test Projects\Stardust\Photographs\_DSC5214.jpg'
-##    Photos.append(Photo)
-##    Photo = r'R:\ORM\photo 3.jpg'
-##    Photos.append(Photo)
-##    Photo = r'R:\ORM\2009\200901483 - CAHST, Merced to Fresno\Photos 200901483\Construction Compliance 9-23-16\Photos 9-23-16'
-##    Photos.append(Photo)
-##    Photo = r'R:\ORM\2016\201600686 Kirkwood Ski Resort - Unauthorized Activities\Site Visit 24 May 2016\100CANON\IMG_6806.JPG'
-##    Photos.append(Photo)
-##    Photo = r'R:\ORM\2013\201300807 Michael Locke Violation\2016-11-02 - Site Visit\Test\Photographs - Copy\DSCN1031.JPG'
-##    Photos.append(Photo)
-##    ### - MOUNTAIN DAYLIGHT TIME TEST - ###
-##    PhotoFolder = r'R:\CO West Branch\Tyler\Desktop\YBCU Habitat\Sanchez Property'
-##    imageNames = filter(lambda x: x.endswith(('.jpg','.JPG','.png','.PNG','.tif','.TIF')),os.listdir(PhotoFolder))
-##    for name in imageNames:
-##        Photos.append(PhotoFolder + "\\" + name)
-##    PhotoFolder = r'R:\Personal Folders\Deters\Programming\MyPythonPackages\Mapped_Photo_Log\Test Projects\201600491, Rooney Property\2016-07-12 - Site Visit\Photographs'
-
 #    PhotoFolder = r'R:\Code\ArcMap Extensions\Photo-LogToolbar\Test Projects\201500644 - Stewart Water Diversion\2016-06-14 - Site Visit\Photographs'
-    PhotoFolder = r'R:\ORM\1993\199300362 Wildlands Mitigation Bank\2025.12.02-Site Visit Photos'
-    PhotoNames = filter(lambda x: x.endswith(('.jpg', '.JPG', '.png', '.PNG', '.tif', '.TIF', '.jpeg')), os.listdir(PhotoFolder))
-    for name in PhotoNames:
-        Photos.append(PhotoFolder + '\\' + name)
+    PhotoFolder = r'C:\Users\L2RCSJ9D\OneDrive - US Army Corps of Engineers\Documents\ArcGIS\Projects\PhotoLogToolbar\Test Projects\201500644 - Stewart Water Diversion\2016-06-14 - Site Visit\Photographs'
+    images = filter(lambda x: x.lower().endswith(('.jpg', '.jpeg', '.png', '.tif')), os.listdir(PhotoFolder))
+    photo_paths = []
+    exclude_list = ['(R090)', '(R180)', '(R270)']
+    for name in images:
+        excluded = False
+        for exclude_string in exclude_list:
+            if exclude_string in name:
+                excluded = True
+        if excluded is False:
+            photo_paths.append(PhotoFolder + '\\' + name)
     ET = Wrapper()
-    ET.GetModeOfTimeDifferences(Photos)
-    for Photo in Photos:
+    ET.GetModeOfTimeDifferences(photo_paths)
+    for Photo in photo_paths:
         print("")
         print("")
         print("")

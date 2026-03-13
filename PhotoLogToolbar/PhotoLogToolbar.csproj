@@ -373,6 +373,9 @@
     <None Update="Template Files\GIS_Data.gdb\a0000000a.gdbtablx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Template Files\GIS_Data.gdb\a0000000b.freelist">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Template Files\GIS_Data.gdb\a0000000b.gdbindexes">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -386,6 +389,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Template Files\GIS_Data.gdb\a0000000b.spx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Template Files\GIS_Data.gdb\a0000000c.freelist">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Template Files\GIS_Data.gdb\a0000000c.gdbindexes">
@@ -416,6 +422,36 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Template Files\GIS_Data.gdb\a0000000d.spx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Template Files\GIS_Data.gdb\a0000000e.gdbindexes">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Template Files\GIS_Data.gdb\a0000000e.gdbtable">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Template Files\GIS_Data.gdb\a0000000e.gdbtablx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Template Files\GIS_Data.gdb\a0000000e.horizon">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Template Files\GIS_Data.gdb\a0000000e.spx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Template Files\GIS_Data.gdb\a0000000f.gdbindexes">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Template Files\GIS_Data.gdb\a0000000f.gdbtable">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Template Files\GIS_Data.gdb\a0000000f.gdbtablx">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Template Files\GIS_Data.gdb\a0000000f.horizon">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Template Files\GIS_Data.gdb\a0000000f.spx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="Template Files\GIS_Data.gdb\gdb">

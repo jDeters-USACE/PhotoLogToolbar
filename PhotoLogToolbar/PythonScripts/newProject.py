@@ -56,9 +56,6 @@ importlib.reload(fovUpdater)
 # Create PrintLog Class
 L = JLog.PrintLog(Log="C:\\Temp\\PhotoLogToolbar_LOG.txt", Delete=True)
 
-# Import Custom Libraries that DO require arcpy
-import FieldUpdates
-
 # Enable Overwritting Geoprocessing Outputsw
 arcpy.env.overwriteOutput = True
 
@@ -67,6 +64,55 @@ arcpy.env.overwriteOutput = True
 install_folder = os.path.dirname(os.path.dirname(os.path.realpath(__file__)))
 
 # FUNCTION DEFINITIONS
+
+def add_all_fields(feature_class_path):
+    """
+    Adds all required fields with the correct data types to the PhotoPoints feature class.
+    This replaces the need for a template feature class.
+    """
+    L.Wrap("Adding required fields to PhotoPoints feature class...")
+    # Field Name, Field Type, Field Alias, Field Length
+    fields_to_add = [
+        ("Number", "SHORT", "Photo Number"),
+        ("Date", "DATE", "Date"),
+        ("Time", "TEXT", "Time", 30), 
+        ("Heading", "TEXT", "Heading", 50),
+        ("Comment", "TEXT", "Comment", 500),
+        ("Orientation", "TEXT", "Orientation", 50),
+        ("ViewHeight", "DOUBLE", "View Height"),
+        ("MetersOfView", "DOUBLE", "Meters of View"),
+        ("Photographer", "TEXT", "Photographer", 100),
+        ("USACE_ID", "TEXT", "USACE ID", 50),
+        ("Project_Name", "TEXT", "Project Name", 255),
+        ("Camera", "TEXT", "Camera", 100),
+        ("LongEdgeFOV", "DOUBLE", "Long Edge FOV"),
+        ("ShortEdgeFOV", "DOUBLE", "Short Edge FOV"),
+        ("AspectRatio", "DOUBLE", "Aspect Ratio"),
+        ("PhotoPath", "TEXT", "Photo Path", 500),
+        ("POINT_X", "DOUBLE", "Longitude"),
+        ("POINT_Y", "DOUBLE", "Latitude"),
+        ("LocationSource", "TEXT", "Location Source", 150),
+        ("HeadingSource", "TEXT", "Heading Source", 150),
+        ("Asterisk", "TEXT", "Asterisk", 150),
+        ("Asterisk2", "TEXT", "Asterisk 2", 150),
+        ("timezone", "TEXT", "Time Zone", 50)
+    ]
+    
+    for field_info in fields_to_add:
+        field_name = field_info[0]
+        field_type = field_info[1]
+        field_alias = field_info[2]
+        field_length = field_info[3] if len(field_info) > 3 else None
+        
+        L.Wrap(f"- Adding field: {field_name} ({field_type})")
+        arcpy.management.AddField(
+            in_table=feature_class_path,
+            field_name=field_name,
+            field_type=field_type,
+            field_alias=field_alias,
+            field_length=field_length
+        )
+
 
 def Offset(Lat,Lon,Degrees,Meters=1000):
     # Earth's Radius in meters, sphere
@@ -444,6 +490,9 @@ def Main(PhotoFolder,
             out_alias="",
             oid_type="SAME_AS_TEMPLATE"
         )
+        # Add all required fields
+        add_all_fields(PhotoPoints)
+
         # Create FOV Polygon Feature Class
         fovFC = arcpy.management.CreateFeatureclass(
             out_path=GDB,
@@ -460,6 +509,7 @@ def Main(PhotoFolder,
             out_alias="",
             oid_type="SAME_AS_TEMPLATE"
         )
+
         # Create Marker Point Feature Class
         mpFC = arcpy.management.CreateFeatureclass(
             out_path=GDB,
@@ -565,9 +615,9 @@ def Main(PhotoFolder,
     del L
 
 if __name__ == '__main__':
-    Main(PhotoFolder=r'C:\Users\L2RCSJ9D\OneDrive - US Army Corps of Engineers\Documents\ArcGIS\Projects\PhotoLogToolbar\Test Projects\201500644 - Stewart Water Diversion\2016-06-14 - Site Visit\test\test\Photographs',
-         OutputFolder=r'C:\Users\L2RCSJ9D\OneDrive - US Army Corps of Engineers\Documents\ArcGIS\Projects\PhotoLogToolbar\Test Projects\201500644 - Stewart Water Diversion\2016-06-14 - Site Visit\test\test',
-         ProjectName='Wildlands Mitigation Bank',
-         USACE_ID='SPK-1993-00362',
-         Photographer='Denielle Wise',
-         RawPhotoPoints=None)
+    Main(PhotoFolder=r'C:\Users\L2RCSJ9D\OneDrive - US Army Corps of Engineers\Documents\ArcGIS\Projects\PhotoLogToolbar\Test Projects\201500644 - Stewart Water Diversion\2016-06-14 - Site Visit\Photographs',
+         OutputFolder=r'C:\Users\L2RCSJ9D\OneDrive - US Army Corps of Engineers\Documents\ArcGIS\Projects\PhotoLogToolbar\Test Projects\201500644 - Stewart Water Diversion\2016-06-14 - Site Visit',
+         ProjectName='Stewart Water Diversion',
+         USACE_ID='SPK-2015-00644',
+         Photographer='Jason C. Deters',
+         RawPhotoPoints=r'C:\Users\L2RCSJ9D\OneDrive - US Army Corps of Engineers\Documents\ArcGIS\Projects\PhotoLogToolbar\Test Projects\201500644 - Stewart Water Diversion\2016-06-14 - Site Visit\GPS Data\Photogr.shp')
