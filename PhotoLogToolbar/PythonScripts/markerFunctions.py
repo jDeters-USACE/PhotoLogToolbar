@@ -102,7 +102,8 @@ def marker2location(EditorName=None, CurrentPhoto=True):
 
                                 # Update FieldName field using the FieldValue value
                                 L.Wrap(f"Setting Photo Location to {mpLat}, {mpLon}...")
-                                fields = ['SHAPE@X', 'SHAPE@Y', 'LocationSource', 'Asterisk', 'HeadingSource', 'Asterisk2']
+                                fields = ['SHAPE@X', 'SHAPE@Y', 'LocationSource', 'Asterisk',
+                                          'HeadingSource', 'Asterisk2', 'POINT_X', 'POINT_Y']
                                 with arcpy.da.UpdateCursor(fcPhotoPoints, fields, where_clause=where) as update_cursor:
                                     for row in update_cursor:
                                         OldLocationSource = row[2]
@@ -128,6 +129,9 @@ def marker2location(EditorName=None, CurrentPhoto=True):
                                         if row[5] != None:
                                             row[4] = OldHeadingSource.strip('*') + '**'
                                             row[5] = '**' + OldAstrisk2.strip('*')
+                                        # Update user-checkable Coordinate value fields
+                                        row[6] = mpLon
+                                        row[7] = mpLat
                                         update_cursor.updateRow(row)
 
                                 # Rebuild Field of View Polygon for new location

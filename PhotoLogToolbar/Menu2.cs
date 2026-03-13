@@ -47,7 +47,7 @@ namespace PhotoLogToolbar
             string pythonScriptsDir = Path.Combine(assemblyDir, "PythonScripts");
             string toolBoxPath = Path.Combine(pythonScriptsDir, "PhotologToolbar.pyt");
 
-            // ✅ CORRECTED: Use a single backslash separator.
+            // Use a single backslash separator.
             string toolName = $"{toolBoxPath}\\marker2location";
 
             if (!File.Exists(toolBoxPath))
@@ -89,7 +89,7 @@ namespace PhotoLogToolbar
             string pythonScriptsDir = Path.Combine(assemblyDir, "PythonScripts");
             string toolBoxPath = Path.Combine(pythonScriptsDir, "PhotologToolbar.pyt");
 
-            // ✅ CORRECTED: Use a single backslash separator.
+            // Use a single backslash separator.
             string toolName = $"{toolBoxPath}\\marker2heading";
 
             if (!File.Exists(toolBoxPath))
@@ -124,7 +124,7 @@ namespace PhotoLogToolbar
             string pythonScriptsDir = Path.Combine(assemblyDir, "PythonScripts");
             string toolBoxPath = Path.Combine(pythonScriptsDir, "PhotologToolbar.pyt");
 
-            // ✅ CORRECTED: Use a single backslash separator.
+            // Use a single backslash separator.
             string toolName = $"{toolBoxPath}\\marker2distance";
 
             if (!File.Exists(toolBoxPath))

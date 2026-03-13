@@ -142,7 +142,7 @@ def createPhotoPoints(GDB, PhotoFolder, ProjectName, USACE_ID, Photographer, Raw
     L.Wrap('---Start of createPhotoPoints()---')
     # Get list of images in PhotoFolder
     L.Wrap('Getting list of all images in PhotoFolder...')
-    images = filter(lambda x: x.lower().endswith(('.jpg', '.jpeg', '.png', '.tif')), os.listdir(PhotoFolder))
+    images = list(filter(lambda x: x.lower().endswith(('.jpg', '.jpeg', '.png', '.tif')), os.listdir(PhotoFolder)))
     photo_paths = []
     exclude_list = ['(R090)', '(R180)', '(R270)']
     for name in images:
@@ -154,35 +154,18 @@ def createPhotoPoints(GDB, PhotoFolder, ProjectName, USACE_ID, Photographer, Raw
             photo_paths.append(PhotoFolder + '\\' + name)
     # Create exiftool Instance
     L.Wrap('Creating instance of ExifParser...')
-    ET = ExifParser.Wrapper()
+    temp_ET = ExifParser.Wrapper()
     # Calculate Time Shift between DateTaken and GPS_DateTime
-    ModeOfTimeDifferences = ET.GetModeOfTimeDifferences(photo_paths)
-    # Hack to get list of attributes
+    ModeOfTimeDifferences = temp_ET.GetModeOfTimeDifferences(photo_paths)
+    del temp_ET # Immediately discared the temporary instance
     L.Wrap('')
     L.Wrap('')
     L.Wrap('')
-    if Photographer == 'EXIF':
-        for photo_path in photo_paths:
-            ET.GetMetadata(photo_path)
-            ET.X_Coord()
-            ET.Y_Coord()
-            ET.Date()
-            ET.Time()
-            ET.Heading()
-            ET.Orientation()
-            ET.Camera()
-            ET.LongEdgeFOV()
-            ET.ShortEdgeFOV()
-            ET.AspectRatio()
-            ET.GetTimeDifference()
-            ET.GetTimeZone()
-            L.Wrap('')
-            L.Wrap('')
-            ET.ListAllAttributes()
-            L.Wrap('')
-            L.Wrap('')
-        ET.Terminate()
-        return
+    # Now, create a new, clean instance for the main processing loop.
+    L.Wrap('Creating main instance of ExifParser for processing...')
+    ET = ExifParser.Wrapper()
+    # Manually set the mode we just calculated.
+    ET.ModeOfTimeDifference = ModeOfTimeDifferences
     # Creating Insert Cursor
     L.Wrap('Creating arcpy.da.InsertCursor()...')
     check = arcpy.Exists(PhotoPoints)
