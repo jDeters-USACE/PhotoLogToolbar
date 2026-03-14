@@ -1,160 +1,270 @@
 ﻿<ArcGIS defaultAssembly="PhotoLogToolbar.dll" defaultNamespace="PhotoLogToolbar" xmlns="http://schemas.esri.com/DADF/Registry" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://schemas.esri.com/DADF/Registry file:///C:/Program%20Files/ArcGIS/Pro/bin/ArcGIS.Desktop.Framework.xsd">
-  <AddInInfo id="{9f88da98-d46e-4969-80c4-a47e8a853ea7}" version="1.0" desktopVersion="3.4.55405" product="ArcGISPro">
-    <Name>Photo Log Toolbar</Name>
-    <Description>This addin facilitates the creation of photo-maps showing the location, orientation, and field of view of field photographs</Description>
-    <Image>Images\AddinDesktop32.png</Image>
-    <Author>Jason C. Deters</Author>
-    <Company>USACE - CESPK</Company>
-    <Date>8/25/2025 5:29:01 PM</Date>
-    <Subject>Framework</Subject>
-    <!-- Note subject can be one or more of these topics:
+	<AddInInfo id="{9f88da98-d46e-4969-80c4-a47e8a853ea7}" version="1.0" desktopVersion="3.4.55405" product="ArcGISPro">
+		<Name>Photo Log Toolbar</Name>
+		<Description>This addin facilitates the creation of photo-maps showing the location, orientation, and field of view of field photographs</Description>
+		<Image>Images\AddinDesktop32.png</Image>
+		<Author>Jason C. Deters</Author>
+		<Company>USACE - CESPK</Company>
+		<Date>8/25/2025 5:29:01 PM</Date>
+		<Subject>Framework</Subject>
+		<!-- Note subject can be one or more of these topics:
                     Content, Framework, Editing, Geodatabase, Geometry, Geoprocessing, Layouts, Map Authoring, Map Exploration -->
-  </AddInInfo>
-  <modules>
-    <insertModule id="PhotoLogToolbar_Module" className="Module1" autoLoad="false" caption="Module1">
-      <!-- uncomment to have the control hosted on a separate tab-->
-      <tabs>
-        <tab id="PhotoLogToolbar_Tab1" caption="Photo Log Toolbar">
-          <group refID="PhotoLogToolbar_Group1" />
-          <group refID="PhotoLogToolbar_Group2" />
-          <group refID="PhotoLogToolbar_Group3" />
-          <group refID="PhotoLogToolbar_Group4" />
-        </tab>
-      </tabs>
-      <groups>
-        <!-- comment this out if you have no controls on the Addin tab to avoid
+	</AddInInfo>
+	<modules>
+		<insertModule id="PhotoLogToolbar_Module" className="Module1" autoLoad="false" caption="Module1">
+			<!-- uncomment to have the control hosted on a separate tab-->
+			<tabs>
+				<tab id="PhotoLogToolbar_Tab1" caption="Photo Log Toolbar">
+					<group refID="PhotoLogToolbar_Group1" />
+					<group refID="PhotoLogToolbar_Group2" />
+					<group refID="PhotoLogToolbar_Group3" />
+					<group refID="PhotoLogToolbar_Group4" />
+				</tab>
+			</tabs>
+			<groups>
+				<!-- comment this out if you have no controls on the Addin tab to avoid
               an empty group-->
-        <group id="PhotoLogToolbar_Group1" caption="Project" appearsOnAddInTab="false">
-          <!-- host controls within groups -->
-          <menu refID="PhotoLogToolbar_Menu1" size="middle" />
-			<menu refID="PhotoLogToolbar_Menu2" size="middle" />
-
-		</group>
-        <group id="PhotoLogToolbar_Group2" caption="Navigation" appearsOnAddInTab="false">
-			<button refID="PhotoLogToolbar_Button1" size="small" />
-			<comboBox refID="PhotoLogToolbar_ComboBox7" />
-			<button refID="PhotoLogToolbar_Button2" size="small" />
-        </group>
-        <group id="PhotoLogToolbar_Group3" caption="Marker Point Tools" appearsOnAddInTab="false">
-			<tool refID="PhotoLogToolbar_ConstructionTool1" size="large" />
-        </group>
-        <group id="PhotoLogToolbar_Group4" caption="Attributes" appearsOnAddInTab="false">
-          <comboBox refID="PhotoLogToolbar_ComboBox1" />
-          <comboBox refID="PhotoLogToolbar_ComboBox3" />
-          <comboBox refID="PhotoLogToolbar_ComboBox5" />
-          <comboBox refID="PhotoLogToolbar_ComboBox4" />
-          <comboBox refID="PhotoLogToolbar_ComboBox2" />
-          <comboBox refID="PhotoLogToolbar_ComboBox6" />
-        </group>
-      </groups>
-      <controls>
-        <!-- add your controls here -->
-        <button id="PhotoLogToolbar_Menu1_Items_Button1"
-				caption="New Project" 
-				className="Menu1_button1" 
-				loadOnClick="true" 
-				smallImage="JobCreate16" 
-				largeImage="JobCreate32">
-          <tooltip heading="New Project">
-				Create a new Mapped Photo Log
-				<disabledText /></tooltip>
-        </button>
-        <button id="PhotoLogToolbar_Menu1_Items_Button2" 
-				caption="Edit Project" 
-				className="Menu1_button2" 
-				loadOnClick="true" 
-				smallImage="MetadataEdit16" 
-				largeImage="MetadataEdit32">
-          <tooltip heading="Edit Current Project Parameters">
-				Open a form to edit the parameters for the currently active mapped photo log
-				<disabledText /></tooltip>
-        </button>
-        <button id="PhotoLogToolbar_Menu1_Items_Button3" 
-				caption="Export Photo Log" 
-				className="Menu1_button3" 
-				loadOnClick="true" 
-				smallImage="PDFFile16" 
-				largeImage="PDFFile32">
-          <tooltip heading="Export Photo Log">
-			  Export all pages of the currently active Mapped Photo Log to a single PDF file<disabledText /></tooltip>
-        </button>
-        <comboBox id="PhotoLogToolbar_ComboBox1" 
-				  caption="Photo Number" 
-				  className="ComboBox1" 
-				  itemWidth="45" 
-				  extendedCaption="Extended Caption" 
-				  isEditable="false" 
-				  isReadOnly="true" 
-				  resizable="true">
-          <tooltip heading="Photo Number">
-			  The value of the "Number" field for the photograph represented by this Map Series page
-			  <disabledText /></tooltip>
-        </comboBox>
-		  <comboBox id="PhotoLogToolbar_ComboBox7" 
-					caption="" 
-					className="ComboBox1" 
-					itemWidth="35" 
-					extendedCaption="Extended Caption" 
-					isEditable="false" 
-					isReadOnly="true" 
-					resizable="true">
-			  <tooltip heading="Tooltip Heading">
-				  Tooltip text<disabledText />
-			  </tooltip>
-		  </comboBox>
-        <comboBox id="PhotoLogToolbar_ComboBox2" caption="Orientation" className="ComboBox2" itemWidth="100" extendedCaption="Extended Caption" isEditable="false" isReadOnly="true" resizable="true">
-          <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
-        </comboBox>
-        <comboBox id="PhotoLogToolbar_ComboBox3" caption="Heading (Degrees)" className="ComboBox3" itemWidth="45" extendedCaption="Extended Caption" isEditable="true" isReadOnly="false" resizable="true">
-          <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
-        </comboBox>
-        <comboBox id="PhotoLogToolbar_ComboBox4" caption="Map Scale ( 1 : X )" className="ComboBox4" itemWidth="70" extendedCaption="Extended Caption" isEditable="true" isReadOnly="false" resizable="true">
-          <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
-        </comboBox>
-        <comboBox id="PhotoLogToolbar_ComboBox5" caption="View Distance (m)" className="ComboBox5" itemWidth="50" extendedCaption="Extended Caption" isEditable="true" isReadOnly="false" resizable="true">
-          <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
-        </comboBox>
-        <comboBox id="PhotoLogToolbar_ComboBox6" caption="Description" className="ComboBox6" itemWidth="300" extendedCaption="Extended Caption" isEditable="true" isReadOnly="false" resizable="true">
-          <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
-        </comboBox>
-        <button id="PhotoLogToolbar_Button1" caption="" className="Button1" loadOnClick="true" smallImage="AngleArrowLeft16" largeImage="AngleArrowLeft32">
-          <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
-        </button>
-        <button id="PhotoLogToolbar_Button2" caption="" className="Button2" loadOnClick="true" smallImage="AngleArrowRight16" largeImage="AngleArrowRight32">
-          <tooltip heading="Tooltip Heading">Tooltip text<disabledText /></tooltip>
-        </button>
-        <tool id="PhotoLogToolbar_ConstructionTool1" categoryRefID="esri_layouts_editing_Tools" caption="Place Marker" className="ConstructionTool1" loadOnClick="true" smallImage="TinEditAddNode16" largeImage="TinEditAddNode32">
-          <tooltip heading="Marker Tool">Place marker on layout<disabledText /></tooltip>
-        </tool>
-        <button id="PhotoLogToolbar_Menu2_Items_Button1" caption="Marker Point --> Photo Location" className="Menu2_button1" loadOnClick="true" smallImage="CameraPositionsCamera16" largeImage="CameraPositionsCamera32">
-          <tooltip heading="Menu Button 1">ToolTip<disabledText /></tooltip>
-        </button>
-        <button id="PhotoLogToolbar_Menu2_Items_Button2" caption="Marker Point --> Photo Direction" className="Menu2_button2" loadOnClick="true" smallImage="ViewshedUseCamera32" largeImage="ViewshedUseCamera32">
-          <tooltip heading="Menu Button 2">ToolTip<disabledText /></tooltip>
-        </button>
-        <button id="PhotoLogToolbar_Menu2_Items_Button3" caption="Marker Point --> Photo View Distance" className="Menu2_button3" loadOnClick="true" smallImage="ViewshedInteractiveOrientation32" largeImage="ViewshedInteractiveOrientation32">
-          <tooltip heading="Menu Button 3">ToolTip<disabledText /></tooltip>
-        </button>
-		  <button id="PhotoLogToolbar_Menu2_Items_Button4" caption="Delete Marker Point" className="Menu2_button4" loadOnClick="true" smallImage="TinEditDeleteNode16" largeImage="TinEditDeleteNode32">
-			  <tooltip heading="Menu Button 3">
-				  ToolTip<disabledText />
-			  </tooltip>
-		  </button>
-      </controls>
-      <menus>
-        <menu id="PhotoLogToolbar_Menu1" caption="PhotoLog Project Menu" smallImage="ArcGISProjectTemplate16" largeImage="ArcGISProjectTemplate32">
-          <button refID="PhotoLogToolbar_Menu1_Items_Button1" />
-          <button refID="PhotoLogToolbar_Menu1_Items_Button2" />
-          <button refID="PhotoLogToolbar_Menu1_Items_Button3" />
-        </menu>
-        <menu id="PhotoLogToolbar_Menu2" caption="Marker Point Operations" smallImage="TinEditChangeNodeZ16" largeImage="TinEditChangeNodeZ32">
-          <button refID="PhotoLogToolbar_Menu2_Items_Button1" />
-          <button refID="PhotoLogToolbar_Menu2_Items_Button2" />
-			<button refID="PhotoLogToolbar_Menu2_Items_Button3" />
-			<button refID="PhotoLogToolbar_Menu2_Items_Button4" />
-		</menu>
-      </menus>
-      <palettes></palettes>
-    </insertModule>
-  </modules>
+				<group id="PhotoLogToolbar_Group1" caption="Project" appearsOnAddInTab="false">
+					<!-- host controls within groups -->
+					<menu refID="PhotoLogToolbar_Menu1" size="middle" />
+					<menu refID="PhotoLogToolbar_Menu2" size="middle" />
+				</group>
+				<group id="PhotoLogToolbar_Group2" caption="Navigation" appearsOnAddInTab="false">
+					<button refID="PhotoLogToolbar_Button1" size="small" />
+					<comboBox refID="PhotoLogToolbar_ComboBox7" />
+					<button refID="PhotoLogToolbar_Button2" size="small" />
+				</group>
+				<group id="PhotoLogToolbar_Group3" caption="Marker Point Tools" appearsOnAddInTab="false">
+					<tool refID="PhotoLogToolbar_ConstructionTool1" size="large" />
+				</group>
+				<group id="PhotoLogToolbar_Group4" caption="Attributes" appearsOnAddInTab="false">
+					<comboBox refID="PhotoLogToolbar_ComboBox1" />
+					<comboBox refID="PhotoLogToolbar_ComboBox3" />
+					<comboBox refID="PhotoLogToolbar_ComboBox5" />
+					<comboBox refID="PhotoLogToolbar_ComboBox4" />
+					<comboBox refID="PhotoLogToolbar_ComboBox2" />
+					<comboBox refID="PhotoLogToolbar_ComboBox6" />
+				</group>
+			</groups>
+			<controls>
+				<!-- add your controls here -->
+				<button id="PhotoLogToolbar_Menu1_Items_Button1"
+						caption="New Project"
+						className="Menu1_button1"
+						loadOnClick="true"
+						smallImage="JobCreate16"
+						largeImage="JobCreate32">
+					<tooltip heading="New Project">
+						Create a new Mapped Photo Log
+						<disabledText />
+					</tooltip>
+				</button>
+				<button id="PhotoLogToolbar_Menu1_Items_Button2"
+						caption="Edit Project"
+						className="Menu1_button2"
+						loadOnClick="true"
+						smallImage="MetadataEdit16"
+						largeImage="MetadataEdit32">
+					<tooltip heading="Edit Current Project Parameters">
+						Open a form to edit the parameters for the currently active mapped photo log
+						<disabledText />
+					</tooltip>
+				</button>
+				<button id="PhotoLogToolbar_Menu1_Items_Button3"
+						caption="Export Photo Log"
+						className="Menu1_button3"
+						loadOnClick="true"
+						smallImage="PDFFile16"
+						largeImage="PDFFile32">
+					<tooltip heading="Export Photo Log">
+						Export all pages of the currently active Mapped Photo Log to a single PDF file
+						<disabledText />
+					</tooltip>
+				</button>
+				<comboBox id="PhotoLogToolbar_ComboBox1"
+						  caption="Photo Number"
+						  className="ComboBox1"
+						  itemWidth="45"
+						  extendedCaption="Extended Caption"
+						  isEditable="false"
+						  isReadOnly="true"
+						  resizable="true">
+					<tooltip heading="Photo Number">
+						The value of the "Number" field for the photograph represented by this Map Series page
+						<disabledText />
+					</tooltip>
+				</comboBox>
+				<comboBox id="PhotoLogToolbar_ComboBox7"
+						  caption=""
+						  className="ComboBox1"
+						  itemWidth="35"
+						  extendedCaption="Extended Caption"
+						  isEditable="false"
+						  isReadOnly="true"
+						  resizable="true">
+					<tooltip heading="Photo Number">
+						The value of the "Number" field for the photograph represented by this Map Series page
+						<disabledText />
+					</tooltip>
+				</comboBox>
+				<comboBox id="PhotoLogToolbar_ComboBox2"
+						  caption="Orientation"
+						  className="ComboBox2"
+						  itemWidth="100"
+						  extendedCaption="Extended Caption"
+						  isEditable="false"
+						  isReadOnly="true"
+						  resizable="true">
+					<tooltip heading="Orientation Dropdown">
+						If you click on the dropdown arrow, and then select Rotate 90° Clockwise, the photo will be rotated accordingly and the orientation value will be updated to reflect the new orientation of the photo.
+						<disabledText />
+					</tooltip>
+				</comboBox>
+				<comboBox id="PhotoLogToolbar_ComboBox3"
+						  caption="Heading (Degrees)"
+						  className="ComboBox3"
+						  itemWidth="45"
+						  extendedCaption="Extended Caption"
+						  isEditable="true"
+						  isReadOnly="false"
+						  resizable="true">
+					<tooltip heading="Heading ComboBox">
+						You can enter a numeric value between 0 and 360 to set the heading of the photo. Heading values represent compass directions, with 0/360 being North, 90 being East, 180 being South, and 270 being West.&#xA;&#xA;If you enter a value outside of the 0-360 range, the value will be automatically adjusted to fall within the range (e.g. entering 370 would result in a heading of 10 degrees, and entering -15 would result in a heading of 345 degrees).&#xA;&#xA;You can also click the dropdown arrow and select from a list of common heading values (0, 45, 90, 135, 180, 225, 270, 315) to set the heading of the photo.
+						<disabledText />
+					</tooltip>
+				</comboBox>
+				<comboBox id="PhotoLogToolbar_ComboBox4"
+						  caption="Map Scale ( 1 : X )"
+						  className="ComboBox4"
+						  itemWidth="70"
+						  extendedCaption="Extended Caption"
+						  isEditable="true"
+						  isReadOnly="false"
+						  resizable="true">
+					<tooltip heading="Map Scale ComboBox">
+						You can enter a numeric value greater than 0 to set the map scale for this page of the map series. The map scale is represented in the format 1 : X, so if you enter 500, the map scale will be 1 : 500.&#xA;&#xA;The map scale determines the level of detail shown on the map, with smaller scale values (e.g. 1:100) showing more detail and larger scale values (e.g. 1:1000) showing less detail.&#xA;&#xA;You can also click the dropdown arrow and select from a list of common scale values (e.g. 100, 250, 500, 1000, 2500, 5000, 10000) to set the map scale for this page of the map series.
+						<disabledText />
+					</tooltip>
+				</comboBox>
+				<comboBox id="PhotoLogToolbar_ComboBox5"
+						  caption="View Distance (m)"
+						  className="ComboBox5"
+						  itemWidth="50"
+						  extendedCaption="Extended Caption"
+						  isEditable="true"
+						  isReadOnly="false"
+						  resizable="true">
+					<tooltip heading="View Distance ComboBox">
+						Enter a numeric value greater than or equal to 0 to set the view distance for the photo. The view distance represents the distance from the camera to the point where the field of view lines intersect on the map layout, and is used to generate the field of view graphic for the photo on the map layout.&#xA;&#xA;If you want to set the view distance graphically, Use the "Marker Point --> Photo View Distance" option in the Marker Point Operations menu to interactively set the view distance by Selecting the Marker Tool and then clicking on the layout.
+						<disabledText />
+					</tooltip>
+				</comboBox>
+				<comboBox id="PhotoLogToolbar_ComboBox6"
+						  caption="Description"
+						  className="ComboBox6"
+						  itemWidth="300"
+						  extendedCaption="Extended Caption"
+						  isEditable="true"
+						  isReadOnly="false"
+						  resizable="true">
+					<tooltip heading="Description ComboBox">
+						Enter a text description for the photo to be included in the map series. This description is optional and can be left blank if you do not want to include a description for the photo.&#xA;&#xA;You can use this field to provide additional context or information about the photo that may be useful for someone viewing the map series. For example, you could include information about the location where the photo was taken, the subject of the photo, or any other relevant details that you want to include in the map series.&#xA;&#xA;This is especially useful if you are documenting an unauthorized activity, and may be called to testify in court about the activity.&#xA;&#xA;A primary way inspector testimony is called into question is by asking you to explain why each photo was taken.&#xA;&#xA;Even if it has been 5+ years since your site inspection, not being able to answer why you took a photo makes your testimony less credible to the jury.&#xA;&#xA;They will literally go through every single site visit photograph during your deposition, and this simple step could make an absolute nightmare into an absolute breeze.
+						<disabledText />
+					</tooltip>
+				</comboBox>
+				<button id="PhotoLogToolbar_Button1"
+						caption=""
+						className="Button1"
+						loadOnClick="true"
+						smallImage="AngleArrowLeft16"
+						largeImage="AngleArrowLeft32">
+					<tooltip heading="Previous Photograph Button">
+						This button allows you to navigate to the previous page of the map series, which corresponds to the previous photograph in the mapped photo log. If you are on the first page of the map series, this button will be disabled and cannot be clicked.
+						<disabledText />
+					</tooltip>
+				</button>
+				<button id="PhotoLogToolbar_Button2"
+						caption=""
+						className="Button2"
+						loadOnClick="true"
+						smallImage="AngleArrowRight16"
+						largeImage="AngleArrowRight32">
+					<tooltip heading="Next Photograph Button">
+						This button allows you to navigate to the next page of the map series, which corresponds to the next photograph in the mapped photo log. If you are on the last page of the map series, this button will be disabled and cannot be clicked.
+						<disabledText />
+					</tooltip>
+				</button>
+				<tool id="PhotoLogToolbar_ConstructionTool1"
+					  categoryRefID="esri_layouts_editing_Tools"
+					  caption="Place Marker Point"
+					  className="ConstructionTool1"
+					  loadOnClick="true"
+					  smallImage="TinEditAddNode16"
+					  largeImage="TinEditAddNode32">
+					<tooltip heading="Marker Tool">
+						Place a marker point on the layout by clicking the location where you want to place the marker. The marker point can then be used in conjunction with the Marker Point Operations menu to set the location, orientation, and view distance of the photo for this page of the map series.
+						<disabledText />
+					</tooltip>
+				</tool>
+				<button id="PhotoLogToolbar_Menu2_Items_Button1"
+						caption="Marker Point --> Photo Location"
+						className="Menu2_button1"
+						loadOnClick="true"
+						smallImage="CameraPositionsCamera16"
+						largeImage="CameraPositionsCamera32">
+					<tooltip heading="Marker Point --> Photo Location Button">
+						This option allows you to set the location of the photo on the layout by clicking on the layout to place the marker point, and then selecting this option to set the location of the photo to match the location of the marker point. This is typically the first step in using the marker point to set up the photo location, orientation, and field of view on the layout.
+						<disabledText />
+					</tooltip>
+				</button>
+				<button id="PhotoLogToolbar_Menu2_Items_Button2"
+						caption="Marker Point --> Photo Direction"
+						className="Menu2_button2"
+						loadOnClick="true"
+						smallImage="ViewshedUseCamera32"
+					largeImage="ViewshedUseCamera32">
+					<tooltip heading="Marker Point --> Photo Direction">
+						This option allows you to set the orientation of the photo by first placing the marker point on the layout, and then clicking this option to set the heading of the photo to match the direction that the marker point is pointing. The direction of the marker point is determined by the angle of the line connecting the base of the marker point to the tip of the marker point, with 0 degrees being straight up (pointing north on the layout), and angles increasing in a clockwise direction (e.g. 90 degrees would be pointing to the right/east on the layout, 180 degrees would be pointing down/south on the layout, and 270 degrees would be pointing to the left/west on the layout).
+						<disabledText />
+					</tooltip>
+				</button>
+				<button id="PhotoLogToolbar_Menu2_Items_Button3"
+						caption="Marker Point --> Photo View Distance"
+						className="Menu2_button3"
+					loadOnClick="true"
+						smallImage="ViewshedInteractiveOrientation32"
+						largeImage="ViewshedInteractiveOrientation32">
+					<tooltip heading="Marker Point --> Photo View Distance Button">
+						This option allows you to set the view distance for the photo by first placing the marker point on the layout, and then clicking this option to interactively set the view distance by clicking on the layout to place a point where the field of view lines will intersect. The distance from the marker point to the point where you click on the layout will be used to set the view distance for the photo, which in turn determines the length of the field of view lines for the photo on the layout.
+						<disabledText />
+					</tooltip>
+				</button>
+				<button id="PhotoLogToolbar_Menu2_Items_Button4"
+						caption="Delete Marker Point"
+						className="Menu2_button4"
+						loadOnClick="true"
+						smallImage="TinEditDeleteNode16"
+						largeImage="TinEditDeleteNode32">
+					<tooltip heading="Delete Marker Point Button">
+						This option allows you to delete the marker point from the layout. This can be useful if you want to remove the marker point after using it to set the photo location, orientation, and view distance, or if you want to move the marker point to a different location on the layout and then use it again to set the photo parameters.
+						<disabledText />
+					</tooltip>
+				</button>
+			</controls>
+			<menus>
+				<menu id="PhotoLogToolbar_Menu1" caption="PhotoLog Project Menu" smallImage="ArcGISProjectTemplate16" largeImage="ArcGISProjectTemplate32">
+					<button refID="PhotoLogToolbar_Menu1_Items_Button1" />
+					<button refID="PhotoLogToolbar_Menu1_Items_Button2" />
+					<button refID="PhotoLogToolbar_Menu1_Items_Button3" />
+				</menu>
+				<menu id="PhotoLogToolbar_Menu2" caption="Marker Point Operations" smallImage="TinEditChangeNodeZ16" largeImage="TinEditChangeNodeZ32">
+					<button refID="PhotoLogToolbar_Menu2_Items_Button1" />
+					<button refID="PhotoLogToolbar_Menu2_Items_Button2" />
+					<button refID="PhotoLogToolbar_Menu2_Items_Button3" />
+					<button refID="PhotoLogToolbar_Menu2_Items_Button4" />
+				</menu>
+			</menus>
+			<palettes></palettes>
+		</insertModule>
+	</modules>
 </ArcGIS>
