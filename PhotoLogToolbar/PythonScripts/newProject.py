@@ -95,7 +95,8 @@ def add_all_fields(feature_class_path):
         ("HeadingSource", "TEXT", "Heading Source", 150),
         ("Asterisk", "TEXT", "Asterisk", 150),
         ("Asterisk2", "TEXT", "Asterisk 2", 150),
-        ("timezone", "TEXT", "Time Zone", 50)
+        ("timezone", "TEXT", "Time Zone", 50),
+        ("OverviewScale", "DOUBLE", "OverviewScale")
     ]
     
     for field_info in fields_to_add:
@@ -171,7 +172,8 @@ def createPhotoPoints(GDB, PhotoFolder, ProjectName, USACE_ID, Photographer, Raw
     check = arcpy.Exists(PhotoPoints)
     fields = ['SHAPE@X', 'SHAPE@Y', 'Number', 'Date', 'Time', 'Heading', 'Comment', 'Orientation', 'ViewHeight',
               'MetersOfView', 'Photographer', 'USACE_ID', 'Project_Name', 'Camera', 'LongEdgeFOV',
-              'ShortEdgeFOV', 'AspectRatio', 'PhotoPath', 'POINT_X', 'POINT_Y', 'LocationSource', 'HeadingSource', 'timezone']
+              'ShortEdgeFOV', 'AspectRatio', 'PhotoPath', 'POINT_X', 'POINT_Y', 'LocationSource', 'HeadingSource',
+              'timezone', 'OverviewScale']
     
     # Define Workspace & Create editor
     edit = arcpy.da.Editor(GDB)
@@ -233,6 +235,7 @@ def createPhotoPoints(GDB, PhotoFolder, ProjectName, USACE_ID, Photographer, Raw
             else:
                 row.append("Camera's internal compass")
             row.append(ET.GetTimeZone()[1])
+            row.append(6000) # Overview Scale
             tup = tuple(row)
             IC_PhotoPoints.insertRow(tup)
             # Create FOV Polygon
@@ -474,7 +477,7 @@ def Main(PhotoFolder,
             oid_type="SAME_AS_TEMPLATE"
         )
         # Add all required fields
-        add_all_fields(PhotoPoints)
+#        add_all_fields(PhotoPoints)
 
         # Create FOV Polygon Feature Class
         fovFC = arcpy.management.CreateFeatureclass(
@@ -541,11 +544,19 @@ def Main(PhotoFolder,
         L.Wrap('Choosing the 3x2 Photo Layout MXD...')
         template_pagx = template_folder + r'\Mapped Photo Log (3x2).pagx'
     
-    # Import Layout File
+    # Use a "before and after" comparison to reliably find the imported layout.
+    # Get the list of all layout names BEFORE importing.
+    layouts_before = {lyt.name for lyt in aprx.listLayouts()}
+    # Import the new layout from the template.
     aprx.importDocument(template_pagx)
+    # Get the list of all layout names AFTER importing.
+    layouts_after = {lyt.name for lyt in aprx.listLayouts()}
+    # The new layout's name is the one in the 'after' set but not the 'before' set.
+    new_layout_name = (layouts_after - layouts_before).pop()
+    # Get the actual layout object by its unique name.
+    new_lyt = aprx.listLayouts(new_layout_name)[0]
 
-    # Rename the Layout (Reference the most recently added layout)
-    new_lyt = aprx.listLayouts()[-1] 
+    # Now that we have the correct layout, rename it.
     new_lyt.name = f"{taken_date} - Mapped Photo Log{name_suffix}"
 
     # Rename and Update Data Sources
@@ -554,8 +565,11 @@ def Main(PhotoFolder,
             # Rename Map to avoid confusing clutter
             mf.map.name = f"{taken_date} - Photo Log - Main{name_suffix}"
             # Get Current "old" GDB path
-            lyr = mf.map.listLayers()[0]
-            old_gdb = arcpy.Describe(lyr.dataSource).path
+            for lyr in mf.map.listLayers():
+                if "Photo Location" in lyr.name:
+                    arcpy.AddMessage(f'layer name = {lyr.name}')
+                    old_gdb = arcpy.Describe(lyr.dataSource).path
+                    break
             # Update GDB Source
             mf.map.updateConnectionProperties(old_gdb, GDB)
             # Ensure All Layers are enabled
@@ -566,8 +580,11 @@ def Main(PhotoFolder,
         elif "Photo Log - Overview" in mf.map.name:
             mf.map.name = f"{taken_date} - Photo Log - Overview{name_suffix}"
             # Get Current "old" GDB path
-            lyr = mf.map.listLayers()[0]
-            old_gdb = arcpy.Describe(lyr.dataSource).path
+            for lyr in mf.map.listLayers():
+                if "Photo Location" in lyr.name:
+                    arcpy.AddMessage(f'layer name = {lyr.name}')
+                    old_gdb = arcpy.Describe(lyr.dataSource).path
+                    break
             # Update GDB Source
             mf.map.updateConnectionProperties(old_gdb, GDB)
 

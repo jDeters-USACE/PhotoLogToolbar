@@ -54,6 +54,8 @@ def Main(FieldName, FieldValue, EditorName=None):
                                       'Asterisk',
                                       'HeadingSource',
                                       'Asterisk2']
+                        elif FieldName == 'ViewHeight':
+                            fields = ['ViewHeight', 'OverviewScale']
                         else:
                             fields = [FieldName]
 
@@ -62,6 +64,8 @@ def Main(FieldName, FieldValue, EditorName=None):
                         with arcpy.da.UpdateCursor(fcPhotoPoints, fields, where_clause=where) as cursor:
                             for row in cursor:
                                 row[0] = FieldValue
+                                if FieldName == 'ViewHeight':
+                                    row[1] = float(FieldValue) * 6
                                 if FieldName == 'Heading':
                                     # Get Number of Asterisks
                                     if row[1] == None:
@@ -91,8 +95,9 @@ def Main(FieldName, FieldValue, EditorName=None):
                             fovUpdater.Main(CurrentPhoto=True)
 
                         # Change Map Scale if necessary
-                        if FieldName == "ViewHeight":
-                            mf.camera.scale = FieldValue
+#                        if FieldName == "ViewHeight":
+#                            mf.camera.scale = FieldValue
+                           
 
         
         # Clear potential locks

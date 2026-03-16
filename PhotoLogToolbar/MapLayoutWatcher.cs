@@ -2,37 +2,28 @@ using ArcGIS.Desktop.Framework.Threading.Tasks;
 using ArcGIS.Desktop.Layouts;
 using ArcGIS.Desktop.Mapping;
 using System;
-using System.Timers;
 using System.Linq;
+using System.Threading.Tasks;
+using System.Timers;
 
 #nullable enable
 
 namespace PhotoLogToolbar
 {
-    /// <summary>
-    /// Centralized watcher that polls the active layout view and reports when:
-    ///  - the active view changes between a LayoutView and other views, or
-    ///  - the active layout instance changes (user switched layouts),
-    ///  - whether the active layout contains a MapFrame named "Main Map Frame" with a "Photo Location" layer.
-    ///
-    /// Subscribers receive LayoutChanged events and should respond by repopulating items (one-time)
-    /// or disabling the UI when the view is incompatible.
-    /// </summary>
     internal sealed class MapLayoutWatcher
     {
         private static readonly Lazy<MapLayoutWatcher> _instance = new(() => new MapLayoutWatcher());
         public static MapLayoutWatcher Instance => _instance.Value;
 
         private readonly object _lock = new();
-        private Timer? _timer;
+        private Timer? _pollingTimer;
+        private Timer? _nudgeTimer;
+
         private string? _lastLayoutId;
         private bool _lastHasPhotoLocation;
         private bool _lastIsLayoutView;
         private int _subscriberCount;
 
-        /// <summary>
-        /// Event invoked when layout state changes.
-        /// </summary>
         public event EventHandler<LayoutChangedEventArgs>? LayoutChanged;
 
         private MapLayoutWatcher() { }
@@ -44,8 +35,7 @@ namespace PhotoLogToolbar
             {
                 LayoutChanged += handler;
                 _subscriberCount++;
-                if (_subscriberCount == 1)
-                    Start();
+                if (_subscriberCount == 1) Start();
             }
         }
 
@@ -56,100 +46,103 @@ namespace PhotoLogToolbar
             {
                 LayoutChanged -= handler;
                 _subscriberCount = Math.Max(0, _subscriberCount - 1);
-                if (_subscriberCount == 0)
-                    Stop();
+                if (_subscriberCount == 0) Stop();
             }
         }
 
         private void Start()
         {
-            if (_timer != null) return;
+            if (_pollingTimer != null) return;
             _lastLayoutId = null;
-            _lastHasPhotoLocation = false;
-            _lastIsLayoutView = false;
 
-            _timer = new Timer(750) { AutoReset = true };
-            _timer.Elapsed += Timer_Elapsed;
-            _timer.Start();
+            _pollingTimer = new Timer(750) { AutoReset = true };
+            _pollingTimer.Elapsed += PollingTimer_Elapsed;
+            _pollingTimer.Start();
+
+            _nudgeTimer = new Timer(60000) { AutoReset = true };
+            _nudgeTimer.Elapsed += NudgeTimer_Elapsed;
+            _nudgeTimer.Start();
         }
 
         private void Stop()
         {
-            if (_timer == null) return;
-            _timer.Stop();
-            _timer.Elapsed -= Timer_Elapsed;
-            _timer.Dispose();
-            _timer = null;
-            _lastLayoutId = null;
-            _lastHasPhotoLocation = false;
-            _lastIsLayoutView = false;
+            _pollingTimer?.Stop();
+            _pollingTimer?.Dispose();
+            _pollingTimer = null;
+            _nudgeTimer?.Stop();
+            _nudgeTimer?.Dispose();
+            _nudgeTimer = null;
         }
 
-        private async void Timer_Elapsed(object? sender, ElapsedEventArgs e)
+        // These methods are called by the UIFocusService and are correct.
+        public void PauseNudgeTimer() => _nudgeTimer?.Stop();
+        public void ResumeNudgeTimer() => _nudgeTimer?.Start();
+
+        /// <summary>
+        /// This method is now separate again.
+        /// It bypasses the 'if (changed)' check and ALWAYS fires the event.
+        /// </summary>
+        private async void ForceRefresh()
         {
             try
             {
-                // Read layout/view state on QueuedTask (ArcGIS objects are thread-affine).
-                var state = await QueuedTask.Run(() =>
-                {
-                    var lv = LayoutView.Active;
-                    if (lv == null)
-                        return new LayoutState(null, false, false);
+                var state = await GetCurrentLayoutState().ConfigureAwait(false);
 
-                    var layout = lv.Layout;
-                    if (layout == null)
-                        return new LayoutState(null, false, false);
+                // Update the last known state so the next regular poll doesn't fire immediately.
+                _lastLayoutId = state.LayoutId;
+                _lastIsLayoutView = state.IsLayoutView;
+                _lastHasPhotoLocation = state.HasPhotoLocation;
 
-                    // Use a lightweight identifier for the layout instance (hashcode as string).
-                    var layoutId = layout.GetHashCode().ToString();
+                // Fire the event unconditionally.
+                LayoutChanged?.Invoke(this, new LayoutChangedEventArgs(state.IsLayoutView, state.HasPhotoLocation, state.LayoutId));
+            }
+            catch { /* Swallow */ }
+        }
 
-                    // Find the map frame named "Main Map Frame" (if present).
-                    var mapFrame = layout.GetElements().OfType<MapFrame>().FirstOrDefault(mf =>
-                    {
-                        try { return mf.Name == "Main Map Frame"; } catch { return false; }
-                    });
+        private void NudgeTimer_Elapsed(object? sender, ElapsedEventArgs e)
+        {
+            // The nudge timer's only job is to call the true ForceRefresh method.
+            ForceRefresh();
+        }
 
-                    if (mapFrame == null)
-                        return new LayoutState(layoutId, true, false);
+        private async void PollingTimer_Elapsed(object? sender, ElapsedEventArgs? e)
+        {
+            try
+            {
+                var state = await GetCurrentLayoutState().ConfigureAwait(false);
 
-                    // Check for the Photo Location feature layer in the map inside that map frame.
-                    var hasPhotoLocation = mapFrame?.Map?.GetLayersAsFlattenedList()
-                        .OfType<FeatureLayer>()
-                        .Any(fl => fl.Name.Equals("Photo Location")) ?? false;
-
-                    return new LayoutState(layoutId, true, hasPhotoLocation);
-                }).ConfigureAwait(false);
-
-                // Compare with last-known state; raise event when something changed.
-                var layoutIdNow = state.LayoutId;
-                var isLayoutViewNow = state.IsLayoutView;
-                var hasPhotoNow = state.HasPhotoLocation;
-
-                var changed =
-                    layoutIdNow != _lastLayoutId
-                    || isLayoutViewNow != _lastIsLayoutView
-                    || hasPhotoNow != _lastHasPhotoLocation;
+                var changed = state.LayoutId != _lastLayoutId
+                           || state.IsLayoutView != _lastIsLayoutView
+                           || state.HasPhotoLocation != _lastHasPhotoLocation;
 
                 if (changed)
                 {
-                    _lastLayoutId = layoutIdNow;
-                    _lastIsLayoutView = isLayoutViewNow;
-                    _lastHasPhotoLocation = hasPhotoNow;
-
-                    LayoutChanged?.Invoke(this, new LayoutChangedEventArgs(isLayoutViewNow, hasPhotoNow, layoutIdNow));
+                    _lastLayoutId = state.LayoutId;
+                    _lastIsLayoutView = state.IsLayoutView;
+                    _lastHasPhotoLocation = state.HasPhotoLocation;
+                    LayoutChanged?.Invoke(this, new LayoutChangedEventArgs(state.IsLayoutView, state.HasPhotoLocation, state.LayoutId));
                 }
             }
-            catch
+            catch { /* Swallow */ }
+        }
+
+        private async Task<LayoutState> GetCurrentLayoutState()
+        {
+            return await QueuedTask.Run(() =>
             {
-                // swallow exceptions to keep polling robust
-            }
+                var lv = LayoutView.Active;
+                if (lv?.Layout == null) return new LayoutState(null, false, false);
+                var layout = lv.Layout;
+                var layoutId = layout.GetHashCode().ToString();
+                var mapFrame = layout.GetElements().OfType<MapFrame>().FirstOrDefault(mf => mf.Name == "Main Map Frame");
+                if (mapFrame?.Map == null) return new LayoutState(layoutId, true, false);
+                var hasPhotoLocation = mapFrame.Map.GetLayersAsFlattenedList().OfType<FeatureLayer>().Any(fl => fl.Name.Equals("Photo Location"));
+                return new LayoutState(layoutId, true, hasPhotoLocation);
+            }).ConfigureAwait(false);
         }
 
         private readonly record struct LayoutState(string? LayoutId, bool IsLayoutView, bool HasPhotoLocation);
 
-        /// <summary>
-        /// Event args describing layout state.
-        /// </summary>
         public sealed class LayoutChangedEventArgs : EventArgs
         {
             public LayoutChangedEventArgs(bool isLayoutView, bool hasPhotoLocation, string? layoutId)
@@ -158,7 +151,6 @@ namespace PhotoLogToolbar
                 HasPhotoLocation = hasPhotoLocation;
                 LayoutId = layoutId;
             }
-
             public bool IsLayoutView { get; }
             public bool HasPhotoLocation { get; }
             public string? LayoutId { get; }

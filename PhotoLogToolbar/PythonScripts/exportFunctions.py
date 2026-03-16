@@ -38,11 +38,17 @@ def export_and_open_photo_log(OpenPDF=True):
                         lyr.visible = False
                         layers_to_toggle.append(lyr)
                         L.Wrap(f"- Layer '{lyr.name}' in map '{mf.map.name}' has been turned OFF.")
+                if lyr.name == "Photo Location":
+                    # Define Feature Class
+                    fcPhotoPoints = lyr.dataSource
+        # Get export_folder
+        export_folder = fcPhotoPoints.strip('\\GIS_Data.gdb\\PhotoPoints')
+
         
         # --- Action 2: Ensure export folder exists ---
         L.Wrap("\nStep 2: Verifying export directory...")
-        project_folder = os.path.dirname(aprx.filePath)
-        export_folder = os.path.join(project_folder, "Export", "Photo Logs")
+#        project_folder = os.path.dirname(aprx.filePath)
+#        export_folder = os.path.join(project_folder, "Export", "Photo Logs")
         os.makedirs(export_folder, exist_ok=True)
         L.Wrap(f"- Export directory is ready: {export_folder}")
         
@@ -63,22 +69,21 @@ def export_and_open_photo_log(OpenPDF=True):
             output_pdf_path = os.path.join(export_folder, new_name)
             counter += 1
 
-        # --- MODIFICATION START: Corrected image_quality to a valid preset ---
         map_series.exportToPDF(
             output_pdf_path, 
             "ALL",
             image_compression = "JPEG",
-            image_quality = 5,               # Use 'BETTER' (1=BEST, 2=BETTER, 3=NORMAL, 4=WORSE, 5=WORST)
+            image_quality = 3,               # Use 'BETTER' (1=BEST, 2=BETTER, 3=NORMAL, 4=WORSE, 5=WORST)
             compress_vector_graphics = True,
-            resolution = 150
+            resolution = 300
         )
-        # --- MODIFICATION END ---
 
         L.Wrap(f"- Successfully exported to: {output_pdf_path}")
         
         # --- Action 4: Open the PDF in a new process ---
         if OpenPDF and os.path.exists(output_pdf_path):
             L.Wrap("\nStep 4: Opening exported PDF...")
+            os.startfile(export_folder)
             os.startfile(output_pdf_path)
             L.Wrap("- The PDF has been opened in your default viewer.")
             

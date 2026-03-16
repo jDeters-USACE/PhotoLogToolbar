@@ -120,7 +120,7 @@ namespace PhotoLogToolbar
                     }
 
                     // Unselect the MarkerPoint Tool by selecting the Explore Tool
-                    await FrameworkApplication.SetCurrentToolAsync("esri_mapping_exploreTool");
+                    //await FrameworkApplication.SetCurrentToolAsync("esri_mapping_exploreTool");
                 }
                 catch (System.Exception ex)
                 {
