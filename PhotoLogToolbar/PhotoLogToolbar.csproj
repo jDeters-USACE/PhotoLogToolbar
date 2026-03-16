@@ -6,6 +6,10 @@
     <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
     <CopyLocalLockFileAssemblies>true</CopyLocalLockFileAssemblies>
     <NoWarn>CA1416</NoWarn>
+    <Company>Jason C. Deters @ USACE</Company>
+    <Copyright>Written by Jason C. Deters</Copyright>
+    <Version>1.0.2</Version>
+    <Title>Photo Log Toolbar for ArcGIS Pro</Title>
   </PropertyGroup>
   <ItemGroup>
     <Compile Remove="ComboBox1_Old.cs" />

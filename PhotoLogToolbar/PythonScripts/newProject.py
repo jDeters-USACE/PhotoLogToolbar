@@ -560,6 +560,7 @@ def Main(PhotoFolder,
     new_lyt.name = f"{taken_date} - Mapped Photo Log{name_suffix}"
 
     # Rename and Update Data Sources
+    old_gdb = r'"C:\Users\L2RCSJ9D\OneDrive - US Army Corps of Engineers\Documents\ArcGIS\Projects\PhotoLogToolbar\Test Projects\201500644 - Stewart Water Diversion\2016-06-14 - Site Visit\Mapped Photo Log 3\GIS_Data.gdb'
     for mf in new_lyt.listElements("MAPFRAME_ELEMENT"):
         if "Photo Log - Main" in mf.map.name:
             # Rename Map to avoid confusing clutter
@@ -568,7 +569,6 @@ def Main(PhotoFolder,
             for lyr in mf.map.listLayers():
                 if "Photo Location" in lyr.name:
                     arcpy.AddMessage(f'layer name = {lyr.name}')
-                    old_gdb = arcpy.Describe(lyr.dataSource).path
                     break
             # Update GDB Source
             mf.map.updateConnectionProperties(old_gdb, GDB)
@@ -583,7 +583,6 @@ def Main(PhotoFolder,
             for lyr in mf.map.listLayers():
                 if "Photo Location" in lyr.name:
                     arcpy.AddMessage(f'layer name = {lyr.name}')
-                    old_gdb = arcpy.Describe(lyr.dataSource).path
                     break
             # Update GDB Source
             mf.map.updateConnectionProperties(old_gdb, GDB)
