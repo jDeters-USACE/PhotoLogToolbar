@@ -127,7 +127,7 @@ namespace PhotoLogToolbar
             var args = Geoprocessing.MakeValueArray(fieldName, fieldValue, authorName);
             await QueuedTask.Run(async () =>
             {
-                var result = await Geoprocessing.ExecuteToolAsync(toolName, args, null, CancellationToken.None, null, GPExecuteToolFlags.Default);
+                var result = await Geoprocessing.ExecuteToolAsync(toolName, args, null, CancellationToken.None, null, GPExecuteToolFlags.AddToHistory);
                 if (result.IsFailed)
                 {
                     var sb = new StringBuilder();
