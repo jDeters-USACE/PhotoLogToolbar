@@ -82,7 +82,7 @@ namespace PhotoLogToolbar
         /// This method is now separate again.
         /// It bypasses the 'if (changed)' check and ALWAYS fires the event.
         /// </summary>
-        private async void ForceRefresh()
+        public async void ForceRefresh()
         {
             try
             {

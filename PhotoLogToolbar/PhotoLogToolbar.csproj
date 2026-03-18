@@ -161,9 +161,6 @@
     <None Update="PythonScripts\osConvenience.py">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="PythonScripts\pButtons.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="PythonScripts\Photo Log Stand-alone GUI.py">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
@@ -482,13 +479,7 @@
     <None Update="PythonScripts\TempToolbox.py">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="PythonScripts\test.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Update="PythonScripts\timeZones.py">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-    <None Update="PythonScripts\timezone_tests.py">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="PythonScripts\tkFilePrompt.py">

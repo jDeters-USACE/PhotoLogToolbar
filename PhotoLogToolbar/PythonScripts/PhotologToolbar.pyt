@@ -12,7 +12,8 @@ class Toolbox:
 
         # List of tool classes associated with this toolbox
         self.tools = [CreateNewPhotoLog, EditExistingPhotoLogParameters, EditField, recreateFOV,
-                      marker2location, marker2heading, marker2distance, exportPhotoLog, rotatePhoto]
+                      marker2location, marker2heading, marker2distance, exportPhotoLog, rotatePhoto,
+                      RestoreFromBackup]
 
 
 class CreateNewPhotoLog:
@@ -736,3 +737,38 @@ class rotatePhoto:
         """This method takes place after outputs are processed and
         added to the display."""
         return
+
+
+class RestoreFromBackup:
+    def __init__(self):
+        """Define the tool for restoring a backup."""
+        self.label = "Restore Photo Log from Backup"
+        self.canRunInBackground = False
+        self.description = "Restores the PhotoPoints feature class from a selected backup."
+
+    def getParameterInfo(self):
+        """Define the tool parameters."""
+        param_1 = arcpy.Parameter(
+            displayName="Backup Name",
+            name="backup_name",
+            datatype="GPString",
+            parameterType="Required",
+            direction="Input")
+        return [param_1]
+
+    def execute(self, parameters, messages):
+        """The source code of the tool."""
+        import os
+        import sys
+        import importlib
+        
+        scripts_folder = os.path.dirname(os.path.realpath(__file__))
+        sys.path.append(scripts_folder)
+        
+        import backupFunctions
+        importlib.reload(backupFunctions)
+        
+        backup_name = parameters[0].valueAsText
+        backupFunctions.restore_from_backup(backup_name)
+        return
+

@@ -28,6 +28,7 @@
 					<!-- host controls within groups -->
 					<menu refID="PhotoLogToolbar_Menu1" size="middle" />
 					<menu refID="PhotoLogToolbar_Menu2" size="middle" />
+					<button refID="PhotoLogToolbar_RestoreFromBackupButton" size="large" />
 				</group>
 				<group id="PhotoLogToolbar_Group2" caption="Navigation" appearsOnAddInTab="false">
 					<button refID="PhotoLogToolbar_Button1" size="small" />
@@ -48,6 +49,17 @@
 			</groups>
 			<controls>
 				<!-- add your controls here -->
+				<button id="PhotoLogToolbar_RestoreFromBackupButton"
+						caption="Restore Backup"
+						className="RestoreFromBackupButton"
+						loadOnClick="true"
+						smallImage="GenericRefresh16"
+						largeImage="GenericRefresh32">
+					<tooltip heading="Restore from Backup">
+						Opens a dialog to select and restore the PhotoPoints feature class from a previously created backup.
+						<disabledText />
+					</tooltip>
+				</button>
 				<button id="PhotoLogToolbar_Menu1_Items_Button1"
 						caption="New Project"
 						className="Menu1_button1"

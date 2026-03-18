@@ -560,7 +560,6 @@ def Main(PhotoFolder,
     new_lyt.name = f"{taken_date} - Mapped Photo Log{name_suffix}"
 
     # Rename and Update Data Sources
-    old_gdb = r'"C:\Users\L2RCSJ9D\OneDrive - US Army Corps of Engineers\Documents\ArcGIS\Projects\PhotoLogToolbar\Test Projects\201500644 - Stewart Water Diversion\2016-06-14 - Site Visit\Mapped Photo Log 3\GIS_Data.gdb'
     for mf in new_lyt.listElements("MAPFRAME_ELEMENT"):
         if "Photo Log - Main" in mf.map.name:
             # Rename Map to avoid confusing clutter
@@ -571,7 +570,10 @@ def Main(PhotoFolder,
                     arcpy.AddMessage(f'layer name = {lyr.name}')
                     break
             # Update GDB Source
-            mf.map.updateConnectionProperties(old_gdb, GDB)
+            mf.map.updateConnectionProperties(r'"C:\Users\L2RCSJ9D\OneDrive - US Army Corps of Engineers\Documents\ArcGIS\Projects\PhotoLogToolbar\Test Projects\201500644 - Stewart Water Diversion\2016-06-14 - Site Visit\Mapped Photo Log 3\GIS_Data.gdb',
+                                              GDB)
+            mf.map.updateConnectionProperties(r'C:\Code\ArcGIS Pro\source\repos\PhotoLogToolbar\PhotoLogToolbar\Template Files\GIS_Data.gdb',
+                                              GDB)
             # Ensure All Layers are enabled
             for lyr in mf.map.listLayers():
                 if not lyr.visible:
@@ -585,7 +587,10 @@ def Main(PhotoFolder,
                     arcpy.AddMessage(f'layer name = {lyr.name}')
                     break
             # Update GDB Source
-            mf.map.updateConnectionProperties(old_gdb, GDB)
+            mf.map.updateConnectionProperties(r'"C:\Users\L2RCSJ9D\OneDrive - US Army Corps of Engineers\Documents\ArcGIS\Projects\PhotoLogToolbar\Test Projects\201500644 - Stewart Water Diversion\2016-06-14 - Site Visit\Mapped Photo Log 3\GIS_Data.gdb',
+                                              GDB)
+            mf.map.updateConnectionProperties(r'C:\Code\ArcGIS Pro\source\repos\PhotoLogToolbar\PhotoLogToolbar\Template Files\GIS_Data.gdb',
+                                              GDB)
 
     # Get the Map Series
     ms = new_lyt.mapSeries
