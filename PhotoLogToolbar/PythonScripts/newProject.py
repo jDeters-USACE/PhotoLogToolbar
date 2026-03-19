@@ -476,7 +476,7 @@ def Main(PhotoFolder,
             out_alias="",
             oid_type="SAME_AS_TEMPLATE"
         )
-        # Add all required fields
+#        # Add all required fields
 #        add_all_fields(PhotoPoints)
 
         # Create FOV Polygon Feature Class
@@ -567,13 +567,17 @@ def Main(PhotoFolder,
             # Get Current "old" GDB path
             for lyr in mf.map.listLayers():
                 if "Photo Location" in lyr.name:
-                    arcpy.AddMessage(f'layer name = {lyr.name}')
+                    L.Wrap(f'Testing Old GDB Path using {lyr.name} layer...')
+                    try:
+                        old_gdb = arcpy.Describe(lyr.dataSource).path
+                        L.Wrap(f'-Old Geodatabase = {old_gdb}')
+                    except:
+                        L.Wrap("There is a problem with your Template Layout's Layer Data Source...")
+                        raise
                     break
             # Update GDB Source
-            mf.map.updateConnectionProperties(r'"C:\Users\L2RCSJ9D\OneDrive - US Army Corps of Engineers\Documents\ArcGIS\Projects\PhotoLogToolbar\Test Projects\201500644 - Stewart Water Diversion\2016-06-14 - Site Visit\Mapped Photo Log 3\GIS_Data.gdb',
-                                              GDB)
-            mf.map.updateConnectionProperties(r'C:\Code\ArcGIS Pro\source\repos\PhotoLogToolbar\PhotoLogToolbar\Template Files\GIS_Data.gdb',
-                                              GDB)
+            L.Wrap(f'Executing MapFrame.Map.updateConnectionProperties(Old Geodatabase, New Geodatabase)...')
+            mf.map.updateConnectionProperties(old_gdb, GDB)
             # Ensure All Layers are enabled
             for lyr in mf.map.listLayers():
                 if not lyr.visible:
@@ -584,13 +588,17 @@ def Main(PhotoFolder,
             # Get Current "old" GDB path
             for lyr in mf.map.listLayers():
                 if "Photo Location" in lyr.name:
-                    arcpy.AddMessage(f'layer name = {lyr.name}')
+                    L.Wrap(f'Testing Old GDB Path using {lyr.name} layer...')
+                    try:
+                        old_gdb = arcpy.Describe(lyr.dataSource).path
+                        L.Wrap(f'-Old Geodatabase = {old_gdb}')
+                    except:
+                        L.Wrap("There is a problem with your Template Layout's Layer Data Source...")
+                        raise
                     break
             # Update GDB Source
-            mf.map.updateConnectionProperties(r'"C:\Users\L2RCSJ9D\OneDrive - US Army Corps of Engineers\Documents\ArcGIS\Projects\PhotoLogToolbar\Test Projects\201500644 - Stewart Water Diversion\2016-06-14 - Site Visit\Mapped Photo Log 3\GIS_Data.gdb',
-                                              GDB)
-            mf.map.updateConnectionProperties(r'C:\Code\ArcGIS Pro\source\repos\PhotoLogToolbar\PhotoLogToolbar\Template Files\GIS_Data.gdb',
-                                              GDB)
+            L.Wrap(f'Executing MapFrame.Map.updateConnectionProperties(Old Geodatabase, New Geodatabase)...')
+            mf.map.updateConnectionProperties(old_gdb, GDB)
 
     # Get the Map Series
     ms = new_lyt.mapSeries
