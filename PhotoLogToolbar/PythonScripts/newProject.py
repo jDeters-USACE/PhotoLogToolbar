@@ -431,14 +431,14 @@ def Main(PhotoFolder,
     ProjectFolder = f'{OutputFolder}\\Mapped Photo Log{name_suffix}'
     GDB = ProjectFolder + '\\GIS_Data.gdb'
     PhotoPoints = GDB + '\\PhotoPoints'
-    fovPath = GDB + '\\FOV'
-    mpPath = GDB + '\\MarkerPoint'
+#    fovPath = GDB + '\\FOV'
+#    mpPath = GDB + '\\MarkerPoint'
 
     template_folder = install_folder + r'\Template Files'
-    PhotoPointTemplate = install_folder + r'\Template Files\Photo Location.lyr'
-    FOVTemplate = install_folder + r'\Template Files\Field of View.lyr'
-    MarkerPointTemplate = install_folder + r'\Template Files\Marker Point.lyr'
-    OverviewPhotoPointTemplate = install_folder + r'\Template Files\Photo Location (Overview).lyr'
+#    PhotoPointTemplate = install_folder + r'\Template Files\Photo Location.lyr'
+#    FOVTemplate = install_folder + r'\Template Files\Field of View.lyr'
+#    MarkerPointTemplate = install_folder + r'\Template Files\Marker Point.lyr'
+#    OverviewPhotoPointTemplate = install_folder + r'\Template Files\Photo Location (Overview).lyr'
     # Create Project Folder
     L.Wrap('Creating Main Project Folder...')
     osConvenience.ensure_dir(ProjectFolder)
@@ -542,7 +542,7 @@ def Main(PhotoFolder,
         template_pagx = template_folder + r'\Mapped Photo Log (4x3).pagx'
     if AspectRatio > .60 and AspectRatio < .70:
         L.Wrap('Choosing the 3x2 Photo Layout MXD...')
-        template_pagx = template_folder + r'\Mapped Photo Log (3x2).pagx'
+        template_pagx = template_folder + r'\Mapped Photo Log (4x3).pagx'  # Currently not feeling the 3x2 layout. Shrinks Vertical shots too much
     
     # Use a "before and after" comparison to reliably find the imported layout.
     # Get the list of all layout names BEFORE importing.
