@@ -8,7 +8,7 @@
     <NoWarn>CA1416</NoWarn>
     <Company>Jason C. Deters @ USACE</Company>
     <Copyright>Written by Jason C. Deters</Copyright>
-    <Version>1.0.2</Version>
+    <Version>1.0.3</Version>
     <Title>Photo Log Toolbar for ArcGIS Pro</Title>
   </PropertyGroup>
   <ItemGroup>
@@ -212,268 +212,268 @@
     <None Update="PythonScripts\SyncPosnPnt.py">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\Field of View.lyr">
+    <None Update="Template_Files\Field_of_View.lyr">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a00000001.gdbindexes">
+    <None Update="Template_Files\GIS_Data.gdb\a00000001.gdbindexes">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a00000001.gdbtable">
+    <None Update="Template_Files\GIS_Data.gdb\a00000001.gdbtable">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a00000001.gdbtablx">
+    <None Update="Template_Files\GIS_Data.gdb\a00000001.gdbtablx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a00000001.TablesByName.atx">
+    <None Update="Template_Files\GIS_Data.gdb\a00000001.TablesByName.atx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a00000002.gdbtable">
+    <None Update="Template_Files\GIS_Data.gdb\a00000002.gdbtable">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a00000002.gdbtablx">
+    <None Update="Template_Files\GIS_Data.gdb\a00000002.gdbtablx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a00000003.gdbindexes">
+    <None Update="Template_Files\GIS_Data.gdb\a00000003.gdbindexes">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a00000003.gdbtable">
+    <None Update="Template_Files\GIS_Data.gdb\a00000003.gdbtable">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a00000003.gdbtablx">
+    <None Update="Template_Files\GIS_Data.gdb\a00000003.gdbtablx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a00000004.CatItemsByPhysicalName.atx">
+    <None Update="Template_Files\GIS_Data.gdb\a00000004.CatItemsByPhysicalName.atx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a00000004.CatItemsByType.atx">
+    <None Update="Template_Files\GIS_Data.gdb\a00000004.CatItemsByType.atx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a00000004.FDO_UUID.atx">
+    <None Update="Template_Files\GIS_Data.gdb\a00000004.FDO_UUID.atx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a00000004.freelist">
+    <None Update="Template_Files\GIS_Data.gdb\a00000004.freelist">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a00000004.gdbindexes">
+    <None Update="Template_Files\GIS_Data.gdb\a00000004.gdbindexes">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a00000004.gdbtable">
+    <None Update="Template_Files\GIS_Data.gdb\a00000004.gdbtable">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a00000004.gdbtablx">
+    <None Update="Template_Files\GIS_Data.gdb\a00000004.gdbtablx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a00000004.horizon">
+    <None Update="Template_Files\GIS_Data.gdb\a00000004.horizon">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a00000004.spx">
+    <None Update="Template_Files\GIS_Data.gdb\a00000004.spx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a00000005.CatItemTypesByName.atx">
+    <None Update="Template_Files\GIS_Data.gdb\a00000005.CatItemTypesByName.atx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a00000005.CatItemTypesByParentTypeID.atx">
+    <None Update="Template_Files\GIS_Data.gdb\a00000005.CatItemTypesByParentTypeID.atx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a00000005.CatItemTypesByUUID.atx">
+    <None Update="Template_Files\GIS_Data.gdb\a00000005.CatItemTypesByUUID.atx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a00000005.gdbindexes">
+    <None Update="Template_Files\GIS_Data.gdb\a00000005.gdbindexes">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a00000005.gdbtable">
+    <None Update="Template_Files\GIS_Data.gdb\a00000005.gdbtable">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a00000005.gdbtablx">
+    <None Update="Template_Files\GIS_Data.gdb\a00000005.gdbtablx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a00000006.CatRelsByDestinationID.atx">
+    <None Update="Template_Files\GIS_Data.gdb\a00000006.CatRelsByDestinationID.atx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a00000006.CatRelsByOriginID.atx">
+    <None Update="Template_Files\GIS_Data.gdb\a00000006.CatRelsByOriginID.atx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a00000006.CatRelsByType.atx">
+    <None Update="Template_Files\GIS_Data.gdb\a00000006.CatRelsByType.atx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a00000006.FDO_UUID.atx">
+    <None Update="Template_Files\GIS_Data.gdb\a00000006.FDO_UUID.atx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a00000006.gdbindexes">
+    <None Update="Template_Files\GIS_Data.gdb\a00000006.gdbindexes">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a00000006.gdbtable">
+    <None Update="Template_Files\GIS_Data.gdb\a00000006.gdbtable">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a00000006.gdbtablx">
+    <None Update="Template_Files\GIS_Data.gdb\a00000006.gdbtablx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a00000007.CatRelTypesByBackwardLabel.atx">
+    <None Update="Template_Files\GIS_Data.gdb\a00000007.CatRelTypesByBackwardLabel.atx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a00000007.CatRelTypesByDestItemTypeID.atx">
+    <None Update="Template_Files\GIS_Data.gdb\a00000007.CatRelTypesByDestItemTypeID.atx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a00000007.CatRelTypesByForwardLabel.atx">
+    <None Update="Template_Files\GIS_Data.gdb\a00000007.CatRelTypesByForwardLabel.atx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a00000007.CatRelTypesByName.atx">
+    <None Update="Template_Files\GIS_Data.gdb\a00000007.CatRelTypesByName.atx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a00000007.CatRelTypesByOriginItemTypeID.atx">
+    <None Update="Template_Files\GIS_Data.gdb\a00000007.CatRelTypesByOriginItemTypeID.atx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a00000007.CatRelTypesByUUID.atx">
+    <None Update="Template_Files\GIS_Data.gdb\a00000007.CatRelTypesByUUID.atx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a00000007.gdbindexes">
+    <None Update="Template_Files\GIS_Data.gdb\a00000007.gdbindexes">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a00000007.gdbtable">
+    <None Update="Template_Files\GIS_Data.gdb\a00000007.gdbtable">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a00000007.gdbtablx">
+    <None Update="Template_Files\GIS_Data.gdb\a00000007.gdbtablx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a00000009.EditingTemplatesByDatasetGUID.atx">
+    <None Update="Template_Files\GIS_Data.gdb\a00000009.EditingTemplatesByDatasetGUID.atx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a00000009.EditingTemplatesByName.atx">
+    <None Update="Template_Files\GIS_Data.gdb\a00000009.EditingTemplatesByName.atx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a00000009.EditingTemplatesByType.atx">
+    <None Update="Template_Files\GIS_Data.gdb\a00000009.EditingTemplatesByType.atx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a00000009.FDO_GlobalID.atx">
+    <None Update="Template_Files\GIS_Data.gdb\a00000009.FDO_GlobalID.atx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a00000009.gdbindexes">
+    <None Update="Template_Files\GIS_Data.gdb\a00000009.gdbindexes">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a00000009.gdbtable">
+    <None Update="Template_Files\GIS_Data.gdb\a00000009.gdbtable">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a00000009.gdbtablx">
+    <None Update="Template_Files\GIS_Data.gdb\a00000009.gdbtablx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a0000000a.EditingTemplateRelsByDestinationID.atx">
+    <None Update="Template_Files\GIS_Data.gdb\a0000000a.EditingTemplateRelsByDestinationID.atx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a0000000a.EditingTemplateRelsByOriginID.atx">
+    <None Update="Template_Files\GIS_Data.gdb\a0000000a.EditingTemplateRelsByOriginID.atx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a0000000a.EditingTemplateRelsByType.atx">
+    <None Update="Template_Files\GIS_Data.gdb\a0000000a.EditingTemplateRelsByType.atx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a0000000a.gdbindexes">
+    <None Update="Template_Files\GIS_Data.gdb\a0000000a.gdbindexes">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a0000000a.gdbtable">
+    <None Update="Template_Files\GIS_Data.gdb\a0000000a.gdbtable">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a0000000a.gdbtablx">
+    <None Update="Template_Files\GIS_Data.gdb\a0000000a.gdbtablx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a0000000b.freelist">
+    <None Update="Template_Files\GIS_Data.gdb\a0000000b.freelist">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a0000000b.gdbindexes">
+    <None Update="Template_Files\GIS_Data.gdb\a0000000b.gdbindexes">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a0000000b.gdbtable">
+    <None Update="Template_Files\GIS_Data.gdb\a0000000b.gdbtable">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a0000000b.gdbtablx">
+    <None Update="Template_Files\GIS_Data.gdb\a0000000b.gdbtablx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a0000000b.horizon">
+    <None Update="Template_Files\GIS_Data.gdb\a0000000b.horizon">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a0000000b.spx">
+    <None Update="Template_Files\GIS_Data.gdb\a0000000b.spx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a0000000c.freelist">
+    <None Update="Template_Files\GIS_Data.gdb\a0000000c.freelist">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a0000000c.gdbindexes">
+    <None Update="Template_Files\GIS_Data.gdb\a0000000c.gdbindexes">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a0000000c.gdbtable">
+    <None Update="Template_Files\GIS_Data.gdb\a0000000c.gdbtable">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a0000000c.gdbtablx">
+    <None Update="Template_Files\GIS_Data.gdb\a0000000c.gdbtablx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a0000000c.horizon">
+    <None Update="Template_Files\GIS_Data.gdb\a0000000c.horizon">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a0000000c.spx">
+    <None Update="Template_Files\GIS_Data.gdb\a0000000c.spx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a0000000d.gdbindexes">
+    <None Update="Template_Files\GIS_Data.gdb\a0000000d.gdbindexes">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a0000000d.gdbtable">
+    <None Update="Template_Files\GIS_Data.gdb\a0000000d.gdbtable">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a0000000d.gdbtablx">
+    <None Update="Template_Files\GIS_Data.gdb\a0000000d.gdbtablx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a0000000d.horizon">
+    <None Update="Template_Files\GIS_Data.gdb\a0000000d.horizon">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a0000000d.spx">
+    <None Update="Template_Files\GIS_Data.gdb\a0000000d.spx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a0000000e.gdbindexes">
+    <None Update="Template_Files\GIS_Data.gdb\a0000000e.gdbindexes">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a0000000e.gdbtable">
+    <None Update="Template_Files\GIS_Data.gdb\a0000000e.gdbtable">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a0000000e.gdbtablx">
+    <None Update="Template_Files\GIS_Data.gdb\a0000000e.gdbtablx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a0000000e.horizon">
+    <None Update="Template_Files\GIS_Data.gdb\a0000000e.horizon">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a0000000e.spx">
+    <None Update="Template_Files\GIS_Data.gdb\a0000000e.spx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a0000000f.gdbindexes">
+    <None Update="Template_Files\GIS_Data.gdb\a0000000f.gdbindexes">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a0000000f.gdbtable">
+    <None Update="Template_Files\GIS_Data.gdb\a0000000f.gdbtable">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a0000000f.gdbtablx">
+    <None Update="Template_Files\GIS_Data.gdb\a0000000f.gdbtablx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a0000000f.horizon">
+    <None Update="Template_Files\GIS_Data.gdb\a0000000f.horizon">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\a0000000f.spx">
+    <None Update="Template_Files\GIS_Data.gdb\a0000000f.spx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\gdb">
+    <None Update="Template_Files\GIS_Data.gdb\gdb">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\GIS_Data.gdb\timestamps">
+    <None Update="Template_Files\GIS_Data.gdb\timestamps">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\Mapped Photo Log %284x3%29.pagx">
+    <None Update="Template_Files\Mapped_Photo_Log_(4x3).pagx">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\Marker Point.lyr">
+    <None Update="Template_Files\Marker Point.lyr">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\Photo Location %28Overview%29.lyr">
+    <None Update="Template_Files\Photo_Location_(Overview).lyr">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\Photo Location.lyr">
+    <None Update="Template_Files\Photo_Location.lyr">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Update="Template Files\WGS_1984.prj">
+    <None Update="Template_Files\WGS_1984.prj">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Update="PythonScripts\TempToolbox.py">

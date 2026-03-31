@@ -188,29 +188,88 @@ def restore_from_backup(backup_name):
 
     gdb_path = os.path.dirname(fc_photopoints)
     backup_fc_path = os.path.join(gdb_path, backup_name)
+    fovPath = os.path.join(gdb_path, "FOV")
     
     if not arcpy.Exists(backup_fc_path):
         arcpy.AddError(f"Backup '{backup_name}' not found.")
         return
 
     L.Wrap(f"Starting restore from '{backup_name}'...")
+    # Create Search Cursor and parse all fields
+    L.Wrap('Creating SearchCursor to read all rows in backup feature class...')
+    fields = ['SHAPE@X', 'SHAPE@Y', 'Number', 'Date', 'Time', 'Heading', 'Comment', 'Orientation',
+              'ViewHeight', 'MetersOfView', 'Photographer', 'USACE_ID', 'Project_Name', 'Camera', 
+              'LongEdgeFOV', 'ShortEdgeFOV', 'AspectRatio', 'PhotoPath', 'POINT_X', 'POINT_Y', 
+              'LocationSource', 'HeadingSource', 'Asterisk', 'Asterisk2', 'timezone', 'OverviewScale']
+    backup_rows = []
+    with arcpy.da.SearchCursor(backup_fc_path, fields, sql_clause=(None, 'ORDER BY Number')) as SC:
+        for row in SC:
+            backup_row = []
+            backup_row.append(row[0])
+            backup_row.append(row[1])
+            backup_row.append(row[2])
+            backup_row.append(row[3])
+            backup_row.append(row[4])
+            backup_row.append(row[5])
+            backup_row.append(row[6])
+            backup_row.append(row[7])
+            backup_row.append(row[8])
+            backup_row.append(row[9])
+            backup_row.append(row[10])
+            backup_row.append(row[11])
+            backup_row.append(row[12])
+            backup_row.append(row[13])
+            backup_row.append(row[14])
+            backup_row.append(row[15])
+            backup_row.append(row[16])
+            backup_row.append(row[17])
+            backup_row.append(row[18])
+            backup_row.append(row[19])
+            backup_row.append(row[20])
+            backup_row.append(row[21])
+            backup_row.append(row[22])
+            backup_row.append(row[23])
+            backup_row.append(row[24])
+            backup_row.append(row[25])
+            backup_rows.append(backup_row)
+    L.Wrap('Overwritting current Photo Location dataset with backup data...')
+    backup_row_number = 0
+    with arcpy.da.UpdateCursor(fc_photopoints, fields, sql_clause=(None, 'ORDER BY Number')) as UC:
+        for row in UC:
+            backup_row = backup_rows[backup_row_number]
+            row[0] = backup_row[0]
+            row[1] = backup_row[1]
+            row[2] = backup_row[2]
+            row[3] = backup_row[3]
+            row[4] = backup_row[4]
+            row[5] = backup_row[5]
+            row[6] = backup_row[6]
+            row[7] = backup_row[7]
+            row[8] = backup_row[8]
+            row[9] = backup_row[9]
+            row[10] = backup_row[10]
+            row[11] = backup_row[11]
+            row[12] = backup_row[12]
+            row[13] = backup_row[13]
+            row[14] = backup_row[14]
+            row[15] = backup_row[15]
+            row[16] = backup_row[16]
+            row[17] = backup_row[17]
+            row[18] = backup_row[18]
+            row[19] = backup_row[19]
+            row[20] = backup_row[20]
+            row[21] = backup_row[21]
+            row[22] = backup_row[22]
+            row[23] = backup_row[23]
+            row[24] = backup_row[24]
+            row[25] = backup_row[25]
+            backup_row_number += 1
+            UC.updateRow(row)
+    L.Wrap("All Photo Location features restored from backup")
 
-    
-    # 1. Delete all features from the current PhotoPoints feature class.
-    #    This empties the table but keeps the feature class and its schema intact.
-    arcpy.management.DeleteFeatures(fc_photopoints)
-    L.Wrap("Cleared existing features from PhotoPoints.")
-
-    # 2. Append the features from the backup into the now-empty PhotoPoints feature class.
-    #    'NO_TEST' means we assume the schemas match, which they should.
-    arcpy.management.Append(
-        inputs=backup_fc_path,
-        target=fc_photopoints,
-        schema_type="NO_TEST"
-    )
-    L.Wrap("Appended features from backup.")
-
-    fovUpdater.Main()
+    # Update the FOV Polygons to reflect any changes to the Photo Location layer
+    L.Wrap('Updating FOV Polygons to reflect changes from Trimble Points')
+    fovUpdater.Simple(photo_location_path=fc_photopoints, fov_path=fovPath)
 
     L.Wrap("Restore complete. Refreshing map series...")
     active_view.mapSeries.refresh()
