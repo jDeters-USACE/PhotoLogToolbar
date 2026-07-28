@@ -28,7 +28,7 @@
     <None Include="Properties\launchSettings.json" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Esri.ArcGISPro.Extensions30" Version="3.4.0.55405" />
+    <PackageReference Include="Esri.ArcGISPro.Extensions30" Version="3.6.0.59527" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="ArcGIS.Desktop.Framework">

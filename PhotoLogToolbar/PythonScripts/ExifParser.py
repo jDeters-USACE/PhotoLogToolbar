@@ -274,9 +274,10 @@ class Wrapper(object):
                 gps_datetime_utm = datetime.datetime.strptime(f'{gps_date_stamp} {int(hour)}:{int(minute)}:{second}', '%Y:%m:%d %H:%M:%S.%f').replace(tzinfo=utc)
             else:
                 gps_datetime_utm = datetime.datetime.strptime(f'{gps_date_stamp} {int(hour)}:{int(minute)}:{int(second)}', '%Y:%m:%d %H:%M:%S').replace(tzinfo=utc)
+            self.L.Wrap(f'GPS_Datetime_UTM = {gps_datetime_utm}')
             return gps_datetime_utm
         except Exception:
-            self.L.Wrap('No GPS DateTime found for this photo')
+            self.L.Wrap('GPS_Datetime_UTM = No GPS DateTime found for this photo')
             return None
 
     def GetTimeDifference(self):
@@ -287,14 +288,15 @@ class Wrapper(object):
             self.L.Wrap('GPS Time:    ' + str(GPStz))
             try:
                 TAKENtz = datetime.datetime.strptime(self.PhotoData['DateTimeOriginal'], '%Y:%m:%d %H:%M:%S').replace(tzinfo=tz)
+                self.L.Wrap(f"Camera Time (DateTimeOriginal) = {TAKENtz}")
             except Exception:
                 TAKENtz = datetime.datetime.strptime(self.PhotoData['FileCreateDate'][:-6], '%Y-%m-%d %H:%M:%S.%f').replace(tzinfo=tz)
-            self.L.Wrap('Camera Time: ' + str(TAKENtz))
+                self.L.Wrap(f'Camera Time (FileCreateDate) = {TAKENtz}')
             self.GPStoTakenDifference = TAKENtz - GPStz
-            self.L.Wrap('GPStoTakenDifference: ' + str(self.GPStoTakenDifference))
+            self.L.Wrap('GPStoTakenDifference = ' + str(self.GPStoTakenDifference))
             return self.GPStoTakenDifference
         except Exception:
-            self.L.Wrap('No GPS DateTime found for this photo')
+            self.L.Wrap('GPStoTakenDifference = No GPS DateTime found for this photo')
             return None
 
     def GetModeOfTimeDifferences(self, images):
@@ -410,6 +412,7 @@ class Wrapper(object):
             self.L.Wrap('Heading = ' + str(Heading))
             return Heading
         except Exception:
+            self.L.Wrap('Heading = No Heading data found')
             return ""
 
     def ListAllAttributes(self):
@@ -464,7 +467,8 @@ class Wrapper(object):
 
 if __name__ == '__main__':
 #    PhotoFolder = r'R:\Code\ArcMap Extensions\Photo-LogToolbar\Test Projects\201500644 - Stewart Water Diversion\2016-06-14 - Site Visit\Photographs'
-    PhotoFolder = r'C:\Users\L2RCSJ9D\OneDrive - US Army Corps of Engineers\Documents\ArcGIS\Projects\PhotoLogToolbar\Test Projects\201500644 - Stewart Water Diversion\2016-06-14 - Site Visit\Photographs'
+#    PhotoFolder = r'C:\Users\L2RCSJ9D\OneDrive - US Army Corps of Engineers\Documents\ArcGIS\Projects\PhotoLogToolbar\Test Projects\201500644 - Stewart Water Diversion\2016-06-14 - Site Visit\Photographs'
+    PhotoFolder = r'R:\ORM\TEST\PLT1\Photos'
     images = filter(lambda x: x.lower().endswith(('.jpg', '.jpeg', '.png', '.tif')), os.listdir(PhotoFolder))
     photo_paths = []
     exclude_list = ['(R090)', '(R180)', '(R270)']
@@ -494,5 +498,5 @@ if __name__ == '__main__':
         ET.AspectRatio()
         ET.GetTimeDifference()
         ET.GetTimeZone()
-##        ET.ListAllAttributes()
+        ET.ListAllAttributes()
 ##    raw_input("test")

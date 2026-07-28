@@ -31,6 +31,7 @@ def print_exif(fname: str):
             pass
 
 if __name__ == '__main__':
-    print_exif("C:\\Code\\ArcMap Extensions\\Photo-Log Toolbar\\Test Projects\\200702227 - Hardesty\\2012-06-05 - Site Visit\\Photographs\\DSC00664.JPG")
-    print_exif("C:\\Code\\ArcMap Extensions\\Photo-Log Toolbar\\Test Projects\\201500307 - Putah Creek Cram Day 2\\2016-08-23 - Site visit\\Photographs\\DSCN0874.JPG")
+#    print_exif("C:\\Code\\ArcMap Extensions\\Photo-Log Toolbar\\Test Projects\\200702227 - Hardesty\\2012-06-05 - Site Visit\\Photographs\\DSC00664.JPG")
+#    print_exif("C:\\Code\\ArcMap Extensions\\Photo-Log Toolbar\\Test Projects\\201500307 - Putah Creek Cram Day 2\\2016-08-23 - Site visit\\Photographs\\DSCN0874.JPG")
+    print_exif(r'R:\ORM\TEST\PLT1\Photos\20260318_152048.jpg')
     print(' ')

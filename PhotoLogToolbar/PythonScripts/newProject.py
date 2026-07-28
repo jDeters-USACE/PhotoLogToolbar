@@ -115,6 +115,9 @@ def add_all_fields(feature_class_path):
         )
 
 
+
+
+
 def Offset(Lat,Lon,Degrees,Meters=1000):
     # Earth's Radius in meters, sphere
     R = 6378137
@@ -130,7 +133,11 @@ def Offset(Lat,Lon,Degrees,Meters=1000):
     del R, mLat, mLon, dLat, dLon
     return Lat0,Lon0
 
-def createPhotoPoints(GDB, PhotoFolder, ProjectName, USACE_ID, Photographer, RawPhotoPoints=None):
+
+
+
+
+def createPhotoPoints(GDB, photo_paths, ProjectName, USACE_ID, Photographer, RawPhotoPoints=None):
     Start = time.perf_counter()
     L = JLog.PrintLog(Log="C:\\Temp\\PhotoLogToolbar_LOG.txt", Indent=6)
     PhotoPoints = f"{GDB}\\PhotoPoints" 
@@ -141,18 +148,6 @@ def createPhotoPoints(GDB, PhotoFolder, ProjectName, USACE_ID, Photographer, Raw
     if str(RawPhotoPoints) == 'None':
         RawPhotoPoints = None
     L.Wrap('---Start of createPhotoPoints()---')
-    # Get list of images in PhotoFolder
-    L.Wrap('Getting list of all images in PhotoFolder...')
-    images = list(filter(lambda x: x.lower().endswith(('.jpg', '.jpeg', '.png', '.tif')), os.listdir(PhotoFolder)))
-    photo_paths = []
-    exclude_list = ['(R090)', '(R180)', '(R270)']
-    for name in images:
-        excluded = False
-        for exclude_string in exclude_list:
-            if exclude_string in name:
-                excluded = True
-        if excluded is False:
-            photo_paths.append(PhotoFolder + '\\' + name)
     # Create exiftool Instance
     L.Wrap('Creating instance of ExifParser...')
     temp_ET = ExifParser.Wrapper()
@@ -350,7 +345,7 @@ def createPhotoPoints(GDB, PhotoFolder, ProjectName, USACE_ID, Photographer, Raw
     L.Time(Start,'updatePhotoPoints()')
     del Start
     L.Wrap('----End of createPhotoPoints()----')
-    del L, images, Num, check
+    del L, Num, check
     return AspectRatio
 
 
@@ -364,6 +359,9 @@ def Main(PhotoFolder,
          RawPhotoPoints=None):
     Start = time.perf_counter()
     L = JLog.PrintLog(Log="C:\\Temp\\PhotoLogToolbar_LOG.txt", Indent=3)
+    L.Wrap(' ')
+    L.Wrap('###--- newProject.py --- Version Dated: March 30, 2026 ---#')
+    L.Wrap(' ')
     try:
         L.Wrap('Backing up all photographs to an encrypted ".7z" file with the password "ChainOfCustody"...')
         backup_images.compress_photos(PhotoFolder)
@@ -377,18 +375,31 @@ def Main(PhotoFolder,
     aprx = arcpy.mp.ArcGISProject("CURRENT")
     
     # Get a taken_date for naming checks before the main processing
-    images = filter(lambda x: x.lower().endswith(('.jpg', '.jpeg', '.png', '.tif')), os.listdir(PhotoFolder))
-    photo_paths = []
+    L.Wrap('Getting list of all files in Photo directory with the following file type extensions: ".jpg", ".jpeg", ".png", ".tif", or ".tiff"...')
+    images = list(filter(lambda x: x.lower().endswith(('.jpg', '.jpeg', '.png', '.tif', '.tiff')), os.listdir(PhotoFolder)))
+    L.Wrap(f'Initial Photo List:')
+    for name in images:
+        L.Wrap(name)
     # Remove images that a the result of previous 'Rotate 90 Degrees' operations
-    exclude_list = ['(R090)', '(R180)', '(R270)']
+    photo_paths = []
+    exclude_list = ['(R090)', '(R180)', '(R270)'] 
+    L.Wrap('Excluding any images created by the Photo Log Toolbar previously...')
+    number_of_photos = 0
     for name in images:
         excluded = False
         for exclude_string in exclude_list:
             if exclude_string in name:
+                L.Wrap(f' {name} excluded')
                 excluded = True
         if excluded is False:
             photo_paths.append(PhotoFolder + '\\' + name)
+            number_of_photos += 1
     # Get first image
+    if number_of_photos < 1:
+        L.Wrap('ERROR - NO PHOTOGRAPHS DETECTED IN PHOTO FOLDER!')
+        arcpy.AddError('NO PHOTOGRAPHS DETECTED IN PHOTO FOLDER')
+    # Get "Date Taken" from first image in the list to use for the Folder, Layout, and Map names
+    L.Wrap('Getting "Date Taken" from first image in the list to use for the Folder, Layout, and Map names...')
     first_image_path = photo_paths[0]
     taken_date = "YYYY-MM-DD" # Default date
     if first_image_path:
@@ -401,13 +412,13 @@ def Main(PhotoFolder,
     L.Wrap(f"Photograph 'Taken Date' = {taken_date}")
     
 
-    # 1. New centralized logic to find a unique suffix for all assets
+    # Find a unique suffix for all assets (Project Folder, Layout Name, Map Names)
     L.Wrap('Finding a unique name suffix for folder, layout, and maps...')
     augment = 1
     name_suffix = ""
     while True:
         # Proposed names
-        prospective_folder = f'{OutputFolder}\\Mapped Photo Log{name_suffix}'
+        prospective_folder = f'{OutputFolder}\\{taken_date}-Photo Log{name_suffix}'
         prospective_layout_name = f"{taken_date} - Mapped Photo Log{name_suffix}"
         prospective_main_map_name = f"{taken_date} - Photo Log - Main{name_suffix}"
         prospective_overview_map_name = f"{taken_date} - Photo Log - Overview{name_suffix}"
@@ -419,7 +430,11 @@ def Main(PhotoFolder,
         overview_map_exists = aprx.listMaps(prospective_overview_map_name)
 
         if not folder_exists and not layout_exists and not main_map_exists and not overview_map_exists:
-            L.Wrap(f"Suffix '{name_suffix}' is available. Locking it in.")
+            L.Wrap(f"Suffix '{name_suffix}' is available. Locking it in...")
+            L.Wrap(f'ProjectFolder = {prospective_folder}')
+            L.Wrap(f'Layout Name = {prospective_layout_name}')
+            L.Wrap(f'Main Map Name = {prospective_main_map_name}')
+            L.Wrap(f'Overview Map Name = {prospective_overview_map_name}')
             break  # Found a unique suffix, exit the loop
 
         # If names are taken, increment and try again
@@ -428,17 +443,17 @@ def Main(PhotoFolder,
         augment += 1
 
     # 2. Define final names using the determined unique suffix
-    ProjectFolder = f'{OutputFolder}\\Mapped Photo Log{name_suffix}'
+    ProjectFolder = f'{OutputFolder}\\{taken_date}-Photo Log{name_suffix}'
     GDB = ProjectFolder + '\\GIS_Data.gdb'
     PhotoPoints = GDB + '\\PhotoPoints'
 #    fovPath = GDB + '\\FOV'
 #    mpPath = GDB + '\\MarkerPoint'
 
-    template_folder = install_folder + r'\Template Files'
-#    PhotoPointTemplate = install_folder + r'\Template Files\Photo Location.lyr'
-#    FOVTemplate = install_folder + r'\Template Files\Field of View.lyr'
-#    MarkerPointTemplate = install_folder + r'\Template Files\Marker Point.lyr'
-#    OverviewPhotoPointTemplate = install_folder + r'\Template Files\Photo Location (Overview).lyr'
+    template_folder = install_folder + r'\Template_Files'
+#    PhotoPointTemplate = install_folder + r'\Template_Files\Photo Location.lyr'
+#    FOVTemplate = install_folder + r'\Template_Files\Field of View.lyr'
+#    MarkerPointTemplate = install_folder + r'\Template_Files\Marker Point.lyr'
+#    OverviewPhotoPointTemplate = install_folder + r'\Template_Files\Photo Location (Overview).lyr'
     # Create Project Folder
     L.Wrap('Creating Main Project Folder...')
     osConvenience.ensure_dir(ProjectFolder)
@@ -458,8 +473,8 @@ def Main(PhotoFolder,
 
     # Create PhotoPoints Feature Class using reference
     L.Wrap('Creating PhotoPoints Feature Class using reference file...')
-    template_path = install_folder + r'\Template Files\GIS_Data.gdb\PhotoPoints'
-    spatial_reference_path = install_folder + r'\Template Files\WGS_1984.prj'
+    template_path = install_folder + r'\Template_Files\GIS_Data.gdb\PhotoPoints'
+#    spatial_reference_path = install_folder + r'\Template_Files\WGS_1984.prj'
     with arcpy.EnvManager(XYResolution="0.0000000000001 Unknown"):
         arcpy.management.CreateFeatureclass(
             out_path=GDB,
@@ -528,7 +543,7 @@ def Main(PhotoFolder,
     # UPDATE ALL PhotoPoints FIELDS (Also provides the Aspect Ratio for choosing the Layout Template)
     L.Wrap('executing updatePhotoPoints()...')
     AspectRatio = createPhotoPoints(GDB,
-                                    PhotoFolder,
+                                    photo_paths,
                                     ProjectName,
                                     USACE_ID,
                                     Photographer,
@@ -536,13 +551,13 @@ def Main(PhotoFolder,
     L.Wrap('AspectRatio = ' + str(AspectRatio))
     
     # Select the 4x3 Layout File by default to catch alternate aspect ratios
-    template_pagx = template_folder + r'\Mapped Photo Log (4x3).pagx' 
+    template_pagx = template_folder + r'\Mapped_Photo_Log_(4x3).pagx' 
     if AspectRatio > .70 and AspectRatio < .80:
         L.Wrap('Choosing the 4x3 Photo Layout MXD...')  
-        template_pagx = template_folder + r'\Mapped Photo Log (4x3).pagx'
+        template_pagx = template_folder + r'\Mapped_Photo_Log_(4x3).pagx'
     if AspectRatio > .60 and AspectRatio < .70:
         L.Wrap('Choosing the 3x2 Photo Layout MXD...')
-        template_pagx = template_folder + r'\Mapped Photo Log (4x3).pagx'  # Currently not feeling the 3x2 layout. Shrinks Vertical shots too much
+        template_pagx = template_folder + r'\Mapped_Photo_Log_(4x3).pagx'  # Currently not feeling the 3x2 layout. Shrinks Vertical shots too much
     
     # Use a "before and after" comparison to reliably find the imported layout.
     # Get the list of all layout names BEFORE importing.

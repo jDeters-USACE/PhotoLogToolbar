@@ -264,7 +264,7 @@
 				</button>
 			</controls>
 			<menus>
-				<menu id="PhotoLogToolbar_Menu1" caption="PhotoLog Project Menu" smallImage="ArcGISProjectTemplate16" largeImage="ArcGISProjectTemplate32">
+				<menu id="PhotoLogToolbar_Menu1" caption="Photo Log Project Menu" smallImage="ArcGISProjectTemplate16" largeImage="ArcGISProjectTemplate32">
 					<button refID="PhotoLogToolbar_Menu1_Items_Button1" />
 					<button refID="PhotoLogToolbar_Menu1_Items_Button2" />
 					<button refID="PhotoLogToolbar_Menu1_Items_Button3" />
